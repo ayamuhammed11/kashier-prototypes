@@ -186,6 +186,7 @@
   .note-avatar.on { background: var(--success-bg); color: var(--success-text); }
   .note-avatar.off { background: var(--destructive-bg); color: var(--destructive); }
   .note-avatar.note { background: var(--warning-bg); color: #92620A; }
+  .note-avatar svg { width: 17px; height: 17px; }
   .note-body { min-width: 0; padding-top: 1px; }
   .note-action { font-size: 13.5px; color: var(--foreground); line-height: 1.4; }
   .note-action b { font-weight: 700; }
@@ -452,10 +453,10 @@
         </div>
 
         <label class="lbl" for="flagReason" id="flagReasonLabel">
-          Reason for turning off <span class="req">*</span>
+          Comment <span class="req">*</span>
         </label>
         <textarea id="flagReason" placeholder="e.g. Account under risk review — hold from automated bulk payouts."></textarea>
-        <div class="field-err" id="flagReasonErr">Please enter a reason before turning the flag off.</div>
+        <div class="field-err" id="flagReasonErr">Please enter a comment before turning the flag off.</div>
 
         <div class="actor-line">
           <span class="av">AM</span>
@@ -501,6 +502,13 @@
   ===================================================================== */
   const notes = [];   // newest first
 
+  /* Kashier history dot icons (Heroicons outline) */
+  const HIST_ICON = {
+    on:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg>',
+    off:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 0 0 5.636 5.636m12.728 12.728A9 9 0 0 1 5.636 5.636m12.728 12.728L5.636 5.636"/></svg>',
+    comment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"/></svg>'
+  };
+
   const notesList = $('notesList');
   const notesEmpty = $('notesEmpty');
 
@@ -514,7 +522,6 @@
     notesEmpty.style.display = 'none';
 
     notesList.innerHTML = notes.map(n => {
-      const initials = escapeHtml(n.initials);
       const meta = `${escapeHtml(n.actor)} · ${formatTimestamp(n.ts)}`;
 
       if (n.type === 'flag') {
@@ -527,7 +534,7 @@
           : '';
         return `
           <div class="note-item">
-            <div class="note-avatar ${avClass}">${initials}</div>
+            <div class="note-avatar ${avClass}">${isOn ? HIST_ICON.on : HIST_ICON.off}</div>
             <div class="note-body">
               <div class="note-action"><b>${escapeHtml(n.actor)}</b> ${verb} <b>Include in bulk Transfer</b>${flagBadge}</div>
               <div class="note-meta">${meta}</div>
@@ -535,13 +542,13 @@
             </div>
           </div>`;
       }
-      // plain note — yellow
+      // plain comment — yellow
       const noteText = n.text
         ? `<div class="note-text note">${escapeHtml(n.text)}</div>`
         : '';
       return `
         <div class="note-item">
-          <div class="note-avatar note">${initials}</div>
+          <div class="note-avatar note">${HIST_ICON.comment}</div>
           <div class="note-body">
             <div class="note-action"><b>${escapeHtml(n.actor)}</b> commented</div>
             <div class="note-meta">${meta}</div>
@@ -625,16 +632,16 @@
       flagModalSub.textContent = 'This account will be included in future bulk transfers.';
       flagBanner.className = 'modal-flag-banner on';
       flagBannerIcon.querySelector('path').setAttribute('d', ICON_CHECK);
-      flagBannerText.textContent = 'Turning the flag ON — you can add a note (optional).';
-      flagReasonLabel.innerHTML = 'Note <span class="opt">(optional)</span>';
+      flagBannerText.textContent = 'Turning the flag ON — you can add a comment (optional).';
+      flagReasonLabel.innerHTML = 'Comment <span class="opt">(optional)</span>';
       flagReason.placeholder = 'e.g. Risk review cleared — re-enabling automated bulk payouts.';
     } else {
       flagModalTitle.innerHTML = 'Turn off “Include in bulk Transfer”';
       flagModalSub.textContent = 'This account will be excluded from bulk transfers.';
       flagBanner.className = 'modal-flag-banner off';
       flagBannerIcon.querySelector('path').setAttribute('d', ICON_WARN);
-      flagBannerText.textContent = 'Turning the flag OFF — a reason is required.';
-      flagReasonLabel.innerHTML = 'Reason for turning off <span class="req">*</span>';
+      flagBannerText.textContent = 'Turning the flag OFF — a comment is required.';
+      flagReasonLabel.innerHTML = 'Comment <span class="req">*</span>';
       flagReason.placeholder = 'e.g. Account under risk review — hold from automated bulk payouts.';
     }
 
