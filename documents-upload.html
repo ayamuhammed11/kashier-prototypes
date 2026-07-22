@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Documents</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #001F5F; --primary-hover: #103788; --ocean-10: #F1F6FF; --ocean-07: #C0D5FF; --link: #2955B1;
+    --accent: #00BCB4; --accent-hover: #00938D; --accent-10: #EAFFFE;
+    --destructive: #A50017; --destructive-hover: #830012; --destructive-bg: #FFEAED;
+    --success: #4AAB4E; --success-bg: #F3FFF4; --success-text: #1A541D;
+    --warning: #B7791F; --warning-bg: #FFF7E6; --warning-text: #7A5210;
+    --foreground: #202020; --border: #E6E8E8; --border-subtle: #F5F6F6; --muted: #F5F6F6;
+    --cadet-base: #556767; --cadet-02: #697979; --cadet-04: #839090; --cadet-05: #919C9C; --cadet-06: #B3BBBB;
+    --pill-bg: #F5F6F6; --pill-text: #697979; --radius: 4px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; font-family: 'Noto Sans', Arial, sans-serif; background: #fff; color: var(--foreground);
+    display: flex; font-size: 14px; min-height: 100vh; }
+  h1, h2, h3, h4 { font-family: 'Outfit', Arial, sans-serif; margin: 0; font-weight: 700; }
+  a { text-decoration: none; }
+  button { font-family: inherit; }
+  .hi { width: 20px; height: 20px; flex-shrink: 0; }
+  .hi-sm { width: 16px; height: 16px; flex-shrink: 0; }
+  .hi-xs { width: 14px; height: 14px; flex-shrink: 0; }
+
+  /* Sidebar */
+  .sidebar { width: 232px; background: #fff; min-height: 100vh; padding: 22px 14px 30px;
+    border-right: 1px solid var(--border-subtle); position: sticky; top: 0; align-self: flex-start;
+    max-height: 100vh; overflow-y: auto; flex-shrink: 0; z-index: 60; }
+  .brand { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 26px; color: var(--accent);
+    padding: 0 10px; margin-bottom: 26px; letter-spacing: -.01em; }
+  .nav-link { display: flex; align-items: center; gap: 12px; padding: 9px 12px; border-radius: 8px;
+    color: var(--cadet-base); font-size: 14px; margin-bottom: 2px; position: relative; }
+  .nav-link svg { color: var(--cadet-04); }
+  .nav-link.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .nav-link.active svg { color: var(--primary); }
+  .nav-link:not(.active):hover { background: #F7F8F8; }
+  .nav-section { margin-top: 14px; }
+  .nav-section .section-head { display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 12px; color: var(--primary); font-weight: 600; font-size: 13px; cursor: pointer; user-select: none; }
+  .nav-section .section-head svg { color: var(--cadet-05); transition: transform .2s ease; }
+  .nav-sub { display: flex; flex-direction: column; overflow: hidden; }
+  .nav-sub a { padding: 9px 12px; border-radius: 8px; color: var(--cadet-base); font-size: 14px; }
+  .nav-sub a:hover { background: #F7F8F8; }
+  .nav-sub a.active { background: #EEF1FB; color: var(--primary); font-weight: 600; }
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(16,24,40,.45); z-index: 55; }
+  .overlay.open { display: block; }
+
+  /* Main */
+  .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; padding: 14px 34px;
+    border-bottom: 1px solid var(--border-subtle); position: sticky; top: 0; background: #fff; z-index: 40; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .hamburger { display: none; width: 40px; height: 40px; border: 1px solid var(--border); border-radius: 8px;
+    background: #fff; color: var(--cadet-base); align-items: center; justify-content: center; cursor: pointer; }
+  .hamburger:hover { background: var(--muted); }
+  .topbar-right { display: flex; align-items: center; gap: 18px; }
+  .lang { color: var(--cadet-base); font-size: 14px; cursor: pointer; background: none; border: none; padding: 0; }
+  .lang:hover { color: var(--primary); }
+  .divider { width: 1px; height: 22px; background: var(--border); }
+  .user { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .user .avatar { width: 30px; height: 30px; background: #E7ECF7; color: var(--primary); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 12px; font-family: 'Outfit', sans-serif; }
+  .user .name { font-weight: 600; font-size: 14px; color: var(--foreground); }
+  .user .gear { color: var(--cadet-04); display: flex; }
+
+  .content { padding: 28px 34px 60px; max-width: 1000px; width: 100%; }
+  .breadcrumb { font-size: 13px; color: var(--cadet-04); margin-bottom: 12px; }
+  .breadcrumb .sep { margin: 0 6px; color: var(--cadet-06); }
+  .breadcrumb .current { color: var(--cadet-base); }
+  .page-head { margin-bottom: 22px; }
+  .page-head h1 { font-size: 30px; color: var(--primary); margin-bottom: 8px; }
+  .page-head .sub { font-size: 14px; color: var(--cadet-base); max-width: 560px; line-height: 1.5; margin: 0; }
+
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius); cursor: pointer; border: 1.5px solid transparent; padding: 0 18px; height: 40px; white-space: nowrap; }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-sm { height: 38px; padding: 0 14px; font-size: 13px; }
+
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--primary); color: #fff;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 13px; display: inline-flex;
+    align-items: center; justify-content: center; flex-shrink: 0; }
+
+  .card { border: 1px solid var(--border-subtle); border-radius: 12px; background: #fff; overflow: hidden; margin-bottom: 22px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 18px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .card-head .ttl { display: flex; align-items: center; gap: 12px; }
+  .card-head h2 { font-size: 17px; color: var(--primary); }
+  .card-head h2 .opt { font-family: 'Noto Sans', sans-serif; font-weight: 400; font-size: 13px; color: var(--cadet-05); }
+  .card-head .count { font-size: 13px; color: var(--cadet-04); white-space: nowrap; }
+  .card-body { padding: 20px 22px; }
+  .card-hint { font-size: 13.5px; color: var(--cadet-base); line-height: 1.5; margin: 0 0 16px; }
+
+  /* Account-type selector (pure CSS reveal) */
+  .acct-radio { position: absolute; width: 1px; height: 1px; opacity: 0; margin: -1px; pointer-events: none; }
+  .acct-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .acct-opt { border: 1px solid var(--border); border-radius: 10px; padding: 16px; cursor: pointer;
+    display: flex; flex-direction: column; gap: 10px; transition: border-color .12s ease, background .12s ease, box-shadow .12s ease; }
+  .acct-opt:hover { border-color: var(--cadet-05); background: #FCFCFD; }
+  .acct-opt .row1 { display: flex; align-items: center; gap: 10px; }
+  .acct-opt .ic { width: 38px; height: 38px; border-radius: 9px; background: #EEF1FB; color: var(--primary);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .acct-opt .ic svg { width: 20px; height: 20px; }
+  .acct-opt .fake-radio { width: 18px; height: 18px; border: 2px solid var(--cadet-05); border-radius: 50%;
+    margin-left: auto; position: relative; flex-shrink: 0; background: #fff; }
+  .acct-opt .nm { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 14.5px; color: var(--foreground); }
+  .acct-opt .ds { font-size: 12.5px; color: var(--cadet-base); line-height: 1.45; }
+  .acct-opt .req-line { color: var(--primary); font-weight: 600; }
+
+  /* checked highlight per option */
+  #acct-individual:checked ~ .acct-card .acct-opt[for="acct-individual"],
+  #acct-registered:checked ~ .acct-card .acct-opt[for="acct-registered"],
+  #acct-professional:checked ~ .acct-card .acct-opt[for="acct-professional"] {
+    border-color: var(--primary); background: var(--ocean-10); box-shadow: 0 0 0 3px rgba(0,31,95,.08); }
+  #acct-individual:checked ~ .acct-card .acct-opt[for="acct-individual"] .ic,
+  #acct-registered:checked ~ .acct-card .acct-opt[for="acct-registered"] .ic,
+  #acct-professional:checked ~ .acct-card .acct-opt[for="acct-professional"] .ic { background: #fff; }
+  #acct-individual:checked ~ .acct-card .acct-opt[for="acct-individual"] .fake-radio,
+  #acct-registered:checked ~ .acct-card .acct-opt[for="acct-registered"] .fake-radio,
+  #acct-professional:checked ~ .acct-card .acct-opt[for="acct-professional"] .fake-radio { border-color: var(--primary); }
+  #acct-individual:checked ~ .acct-card .acct-opt[for="acct-individual"] .fake-radio::after,
+  #acct-registered:checked ~ .acct-card .acct-opt[for="acct-registered"] .fake-radio::after,
+  #acct-professional:checked ~ .acct-card .acct-opt[for="acct-professional"] .fake-radio::after {
+    content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--primary); }
+
+  /* Reveal the matching documents section */
+  .docs-for { display: none; }
+  #acct-individual:checked   ~ #docs-individual,
+  #acct-registered:checked   ~ #docs-registered,
+  #acct-professional:checked ~ #docs-professional { display: block; }
+  #acct-individual:checked ~ #pickPrompt,
+  #acct-registered:checked ~ #pickPrompt,
+  #acct-professional:checked ~ #pickPrompt { display: none; }
+
+  /* Requirement summary strip */
+  .req-summary { display: flex; align-items: center; gap: 14px; border: 1px solid var(--border-subtle);
+    background: #FAFBFB; border-radius: 10px; padding: 14px 18px; margin-bottom: 22px; }
+  .req-summary .ring { position: relative; width: 44px; height: 44px; flex-shrink: 0; }
+  .req-summary .ring svg { transform: rotate(-90deg); }
+  .req-summary .ring .pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; color: var(--primary); }
+  .req-summary .txt b { font-family: 'Outfit', sans-serif; color: var(--foreground); font-size: 15px; }
+  .req-summary .txt span { display: block; color: var(--cadet-base); font-size: 13px; margin-top: 2px; }
+
+  /* Required document item */
+  .req-list { display: flex; flex-direction: column; }
+  .req-item { padding: 20px 22px; border-bottom: 1px solid var(--border-subtle); }
+  .req-item:last-child { border-bottom: none; }
+  .req-top { display: flex; gap: 16px; align-items: flex-start; }
+  .req-thumb { border: 1px solid var(--border); border-radius: 8px; width: 66px; height: 46px; overflow: hidden; background: #fff; flex-shrink: 0; }
+  .req-thumb svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .req-info { flex: 1; min-width: 0; }
+  .req-title-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .req-title { font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 14.5px; color: var(--foreground); }
+  .req-title .star { color: var(--destructive); }
+  .req-ar { color: var(--cadet-05); font-size: 13px; direction: rtl; }
+  .req-desc { font-size: 13px; color: var(--cadet-base); line-height: 1.5; margin-top: 5px; }
+  .req-meta { font-size: 12px; color: var(--cadet-05); margin-top: 6px; }
+  .req-conds { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+  .req-conds li { display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: var(--cadet-base); line-height: 1.4; }
+  .req-conds li svg { color: var(--success); margin-top: 1px; flex-shrink: 0; }
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; border-radius: 20px;
+    padding: 4px 10px; text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; flex-shrink: 0; }
+  .status-pill .dot { width: 7px; height: 7px; border-radius: 50%; }
+  .status-pill.required { background: var(--pill-bg); color: var(--pill-text); }
+  .status-pill.required .dot { background: var(--cadet-05); }
+  .status-pill.partial { background: var(--warning-bg); color: var(--warning-text); }
+  .status-pill.partial .dot { background: var(--warning); }
+  .status-pill.done { background: var(--success-bg); color: var(--success-text); }
+  .status-pill.done .dot { background: var(--success); }
+
+  /* Upload slots */
+  .req-slots { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; }
+  .req-slots.single { grid-template-columns: 1fr; }
+  .dz-block .dz-label { font-size: 12.5px; font-weight: 700; color: var(--cadet-base); margin-bottom: 7px; display: flex; align-items: center; gap: 6px; }
+  .dz-block .dz-label .req { color: var(--destructive); }
+  .dropzone { display: block; border: 1.5px dashed var(--border); border-radius: 10px; padding: 18px; text-align: center;
+    cursor: pointer; transition: border-color .12s ease, background .12s ease; background: #fff; }
+  .dropzone:hover, .dropzone.drag { border-color: var(--primary); background: var(--ocean-10); }
+  .dropzone.err { border-color: var(--destructive); background: var(--destructive-bg); }
+  .dz-ico { width: 30px; height: 30px; color: var(--primary); margin: 0 auto 7px; display: block; }
+  .dz-main { font-size: 13px; color: var(--foreground); font-weight: 600; }
+  .dz-main .link { color: var(--primary); text-decoration: underline; }
+  .dz-sub { font-size: 11.5px; color: var(--cadet-05); margin-top: 4px; }
+  .dz-files { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+  .dz-fchip { display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-subtle); background: #fff;
+    border-radius: 8px; padding: 9px 12px; text-align: left; }
+  .dz-fchip svg.doc { color: var(--cadet-04); flex-shrink: 0; }
+  .dz-fchip .flabel { font-size: 11px; font-weight: 700; color: var(--primary); background: #EEF1FB; border: 1px solid #DCE3F5;
+    border-radius: 4px; padding: 1px 7px; white-space: nowrap; }
+  .dz-fchip .fname { font-size: 13px; font-weight: 600; color: var(--foreground); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dz-fchip .fsize { font-size: 12px; color: var(--cadet-05); margin-left: auto; white-space: nowrap; }
+  .dz-fchip .rm { border: none; background: none; color: var(--cadet-04); cursor: pointer; width: 26px; height: 26px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dz-fchip .rm:hover { color: var(--destructive); background: var(--destructive-bg); }
+
+  /* Prompt before a type is chosen */
+  .prompt { border: 1px dashed var(--border); border-radius: 12px; background: #FAFBFB; text-align: center; padding: 44px 24px; }
+  .prompt .icon { width: 52px; height: 52px; border-radius: 50%; background: var(--ocean-10); color: var(--primary);
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+  .prompt .icon svg { width: 26px; height: 26px; }
+  .prompt h3 { font-size: 15.5px; color: var(--foreground); margin-bottom: 6px; }
+  .prompt p { font-size: 13px; color: var(--cadet-base); margin: 0 auto; max-width: 360px; line-height: 1.5; }
+
+  /* Submit / review */
+  .btn-ghost { background: transparent; color: var(--primary); border-color: transparent; }
+  .btn-ghost:hover { background: var(--ocean-10); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .submit-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+    border: 1px solid var(--border-subtle); border-radius: 12px; background: #FAFBFB; padding: 16px 20px; margin-bottom: 18px; }
+  .submit-note { font-size: 13px; color: var(--cadet-base); margin: 0; max-width: 540px; line-height: 1.5; }
+  .submit-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+  .review-banner { display: flex; gap: 12px; align-items: flex-start; border: 1px solid; border-radius: 10px;
+    padding: 14px 16px; margin-bottom: 18px; font-size: 13.5px; line-height: 1.45; }
+  .review-banner[hidden] { display: none; }
+  .review-banner .rb-ic { width: 22px; height: 22px; flex-shrink: 0; margin-top: 1px; }
+  .review-banner .rb-title { font-weight: 700; font-family: 'Outfit', sans-serif; }
+  .review-banner .rb-text { margin-top: 3px; }
+  .review-banner .rb-time { font-size: 12px; opacity: .8; margin-top: 6px; }
+  .review-banner .rb-edit { margin-top: 12px; }
+  .review-banner.pending { background: var(--ocean-10); border-color: var(--ocean-07); color: var(--primary); }
+  .review-banner.approved { background: var(--success-bg); border-color: #AEEBB0; color: var(--success-text); }
+  .review-banner.rejected { background: var(--warning-bg); border-color: #F3D48A; color: var(--warning-text); }
+  .proto { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-top: 1px dashed var(--border);
+    padding-top: 14px; margin-bottom: 22px; }
+  .proto[hidden] { display: none; }
+  .proto-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; color: var(--cadet-05); }
+  .proto-link { background: none; border: none; color: var(--link); font-size: 13px; font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; }
+  .proto-link:hover { color: var(--primary); }
+  .docs-for.locked .dropzone { pointer-events: none; opacity: .5; border-style: solid; background: var(--muted); }
+  .docs-for.locked .dz-fchip .rm { display: none; }
+  .status-pill.pending { background: var(--ocean-10); color: var(--primary); }
+  .status-pill.pending .dot { background: var(--primary); }
+  .status-pill.approved { background: var(--success-bg); color: var(--success-text); }
+  .status-pill.approved .dot { background: var(--success); }
+  .status-pill.rejected { background: var(--destructive-bg); color: var(--destructive); }
+  .status-pill.rejected .dot { background: var(--destructive); }
+
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
+    color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; z-index: 100; opacity: 0;
+    pointer-events: none; transition: opacity .2s ease, transform .2s ease; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 1000px) { .content { padding: 24px 22px 60px; } .topbar { padding: 12px 22px; } }
+  @media (max-width: 900px) {
+    .sidebar { position: fixed; top: 0; left: 0; height: 100vh; transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 10px 40px rgba(0,0,0,.18); }
+    .sidebar.open { transform: translateX(0); }
+    .hamburger { display: flex; }
+    .page-head h1 { font-size: 26px; }
+    .acct-opts { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 620px) { .user .name { display: none; } .req-slots { grid-template-columns: 1fr; } .req-top { flex-wrap: wrap; } }
+</style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">kashier</div>
+    <a class="nav-link" href="home.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"/></svg>Home</a>
+    <a class="nav-link" href="payments.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z"/></svg>Payments</a>
+    <a class="nav-link active" href="documents-upload.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Business Profile</a>
+    <a class="nav-link" href="terminals.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <div class="nav-section">
+      <div class="section-head" id="configHead">Configuration
+        <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 15.75 7.5-7.5 7.5 7.5"/></svg>
+      </div>
+      <div class="nav-sub" id="configSub">
+        <a href="document-types.html">Document Types</a>
+        <a href="documents-upload.html" class="active">Documents</a>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger" id="hamburger" aria-label="Open menu">
+          <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/></svg>
+        </button>
+      </div>
+      <div class="topbar-right">
+        <button class="lang" id="langBtn">عربي</button>
+        <div class="divider"></div>
+        <div class="user">
+          <div class="avatar">AM</div>
+          <span class="name">Aya Muhammed</span>
+          <span class="gear"><svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="breadcrumb">Business Profile <span class="sep">/</span> <span class="current">Documents</span></div>
+
+      <div class="page-head">
+        <h1>Documents</h1>
+        <p class="sub">First choose your account type. The documents you need to upload will then appear below, based on your account's requirements.</p>
+      </div>
+
+      <!-- Account-type radios (drive the CSS reveal) -->
+      <input class="acct-radio" type="radio" name="accttype" id="acct-individual">
+      <input class="acct-radio" type="radio" name="accttype" id="acct-registered">
+      <input class="acct-radio" type="radio" name="accttype" id="acct-professional">
+
+      <!-- STEP 1 — Account type -->
+      <section class="card acct-card">
+        <div class="card-head"><div class="ttl"><span class="step-num">1</span><h2>Account type</h2></div></div>
+        <div class="card-body">
+          <p class="card-hint">Select the option that describes your business. This determines which documents are required.</p>
+          <div class="acct-opts">
+            <label class="acct-opt" for="acct-individual">
+              <div class="row1">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>
+                <span class="fake-radio"></span>
+              </div>
+              <div class="nm">Individual Seller</div>
+              <div class="ds">A sole individual selling without a registered company.</div>
+              <div class="ds req-line">Requires: National ID + additional</div>
+            </label>
+            <label class="acct-opt" for="acct-registered">
+              <div class="row1">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"/></svg></span>
+                <span class="fake-radio"></span>
+              </div>
+              <div class="nm">Registered Business</div>
+              <div class="ds">A company with a commercial registration and tax card.</div>
+              <div class="ds req-line">Requires: National ID, Tax Card, Commercial Registration + additional</div>
+            </label>
+            <label class="acct-opt" for="acct-professional">
+              <div class="row1">
+                <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z"/></svg></span>
+                <span class="fake-radio"></span>
+              </div>
+              <div class="nm">Professional Business</div>
+              <div class="ds">A licensed professional or freelancer with a tax card.</div>
+              <div class="ds req-line">Requires: National ID, Tax Card + additional</div>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Prompt shown until a type is chosen -->
+      <div class="prompt" id="pickPrompt">
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg></div>
+        <h3>Choose your account type to continue</h3>
+        <p>Once you select an account type above, the exact documents you need to upload will appear here.</p>
+      </div>
+
+      <!-- ===== INDIVIDUAL SELLER ===== -->
+      <div class="docs-for" id="docs-individual">
+        <div class="req-summary">
+          <div class="ring"><svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#E6E8E8" stroke-width="5"/><circle class="ring-prog" cx="22" cy="22" r="18" fill="none" stroke="#00BCB4" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"/></svg><span class="pct ring-pct">0%</span></div>
+          <div class="txt"><b class="sum-title">0 of 1 required documents uploaded</b><span>Upload each required document below so our team can verify your business.</span></div>
+        </div>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">2</span><h2>Required documents</h2></div><span class="count req-count">0 of 1 complete</span></div>
+          <div class="req-list">
+            <!--NATIONAL_ID-->
+            <div class="req-item">
+              <div class="req-top">
+                <div class="req-thumb"><svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="18" y="24" width="244" height="128" rx="14" fill="#EAF9F4" stroke="#00BCB4" stroke-width="2"/><rect x="40" y="46" width="66" height="84" rx="8" fill="#CDEDE4"/><circle cx="73" cy="78" r="15" fill="#8FD4C4"/><path d="M49 124c0-15 11-24 24-24s24 9 24 24z" fill="#8FD4C4"/><rect x="124" y="52" width="112" height="11" rx="5.5" fill="#00BCB4"/><rect x="124" y="74" width="96" height="8" rx="4" fill="#B7D8CF"/><rect x="124" y="92" width="112" height="8" rx="4" fill="#D6E8E3"/><rect x="124" y="110" width="72" height="8" rx="4" fill="#D6E8E3"/></svg></div>
+                <div class="req-info">
+                  <div class="req-title-row"><span class="req-title">National ID <span class="star">*</span></span><span class="req-ar">بطاقة الرقم القومي</span></div>
+                  <div class="req-desc">Front and back of a valid national identity card.</div>
+                  <div class="req-meta">PDF, JPG, PNG · up to 5 MB · 2 files (labeled)</div>
+                  <ul class="req-conds"><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Both front and back sides are clearly visible</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Document is valid and not expired</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>All corners and text are readable</span></li></ul>
+                </div>
+                <span class="status-pill required"><span class="dot"></span>Required</span>
+              </div>
+              <div class="req-slots">
+                <div class="dz-block" data-label="Front side">
+                  <div class="dz-label">Front side <span class="req">*</span></div>
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+                <div class="dz-block" data-label="Back side">
+                  <div class="dz-label">Back side <span class="req">*</span></div>
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">+</span><h2>Additional documents <span class="opt">(Optional)</span></h2></div><span class="count add-count">0 files</span></div>
+          <div class="card-body additional">
+            <p class="card-hint">Upload any other supporting documents relevant to your business — for example a licence, authorization letter, or anything our team requests.</p>
+            <div class="dz-block" data-label="">
+              <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 10 MB · one or more files</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple hidden></label>
+              <div class="dz-files"></div>
+            </div>
+          </div>
+        </section>
+        <div class="review-banner" hidden></div>
+        <div class="submit-bar">
+          <p class="submit-note">Upload all required documents, then submit them for the compliance team to review and approve.</p>
+          <div class="submit-actions">
+            <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
+            <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
+          </div>
+        </div>
+        <div class="proto" hidden>
+          <span class="proto-label">Prototype — simulate the compliance team's decision</span>
+          <button class="proto-link sim-approve" type="button">▶ Approve all</button>
+          <button class="proto-link sim-reject" type="button">▶ Reject a document</button>
+        </div>
+      </div>
+
+      <!-- ===== REGISTERED BUSINESS ===== -->
+      <div class="docs-for" id="docs-registered">
+        <div class="req-summary">
+          <div class="ring"><svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#E6E8E8" stroke-width="5"/><circle class="ring-prog" cx="22" cy="22" r="18" fill="none" stroke="#00BCB4" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"/></svg><span class="pct ring-pct">0%</span></div>
+          <div class="txt"><b class="sum-title">0 of 3 required documents uploaded</b><span>Upload each required document below so our team can verify your business.</span></div>
+        </div>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">2</span><h2>Required documents</h2></div><span class="count req-count">0 of 3 complete</span></div>
+          <div class="req-list">
+            <div class="req-item">
+              <div class="req-top">
+                <div class="req-thumb"><svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="18" y="24" width="244" height="128" rx="14" fill="#EAF9F4" stroke="#00BCB4" stroke-width="2"/><rect x="40" y="46" width="66" height="84" rx="8" fill="#CDEDE4"/><circle cx="73" cy="78" r="15" fill="#8FD4C4"/><path d="M49 124c0-15 11-24 24-24s24 9 24 24z" fill="#8FD4C4"/><rect x="124" y="52" width="112" height="11" rx="5.5" fill="#00BCB4"/><rect x="124" y="74" width="96" height="8" rx="4" fill="#B7D8CF"/><rect x="124" y="92" width="112" height="8" rx="4" fill="#D6E8E3"/><rect x="124" y="110" width="72" height="8" rx="4" fill="#D6E8E3"/></svg></div>
+                <div class="req-info">
+                  <div class="req-title-row"><span class="req-title">National ID <span class="star">*</span></span><span class="req-ar">بطاقة الرقم القومي</span></div>
+                  <div class="req-desc">Front and back of a valid national identity card.</div>
+                  <div class="req-meta">PDF, JPG, PNG · up to 5 MB · 2 files (labeled)</div>
+                  <ul class="req-conds"><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Both front and back sides are clearly visible</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Document is valid and not expired</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>All corners and text are readable</span></li></ul>
+                </div>
+                <span class="status-pill required"><span class="dot"></span>Required</span>
+              </div>
+              <div class="req-slots">
+                <div class="dz-block" data-label="Front side">
+                  <div class="dz-label">Front side <span class="req">*</span></div>
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+                <div class="dz-block" data-label="Back side">
+                  <div class="dz-label">Back side <span class="req">*</span></div>
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+              </div>
+            </div>
+            <div class="req-item">
+              <div class="req-top">
+                <div class="req-thumb"><svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="22" y="34" width="236" height="108" rx="14" fill="#EEF2FB" stroke="#001F5F" stroke-width="1.5"/><rect x="42" y="56" width="56" height="44" rx="6" fill="#C9D5EE"/><path d="M58 90h24M62 82l8-14 8 14" stroke="#5C74A8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="118" y="58" width="120" height="10" rx="5" fill="#001F5F"/><rect x="118" y="78" width="96" height="8" rx="4" fill="#B9C4DE"/><rect x="42" y="112" width="132" height="9" rx="4.5" fill="#8FA0C6"/><rect x="188" y="108" width="50" height="18" rx="4" fill="#001F5F"/></svg></div>
+                <div class="req-info">
+                  <div class="req-title-row"><span class="req-title">Tax Card <span class="star">*</span></span><span class="req-ar">البطاقة الضريبية</span></div>
+                  <div class="req-desc">Valid tax registration card (Tax ID) issued by the authority.</div>
+                  <div class="req-meta">PDF, JPG · up to 5 MB · single file</div>
+                  <ul class="req-conds"><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Tax number is clearly readable</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Card is currently valid</span></li></ul>
+                </div>
+                <span class="status-pill required"><span class="dot"></span>Required</span>
+              </div>
+              <div class="req-slots single">
+                <div class="dz-block" data-label="">
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+              </div>
+            </div>
+            <div class="req-item">
+              <div class="req-top">
+                <div class="req-thumb"><svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="46" y="14" width="188" height="148" rx="8" fill="#FFFFFF" stroke="#E6E8E8"/><rect x="70" y="34" width="140" height="11" rx="5.5" fill="#001F5F"/><rect x="86" y="58" width="108" height="7" rx="3.5" fill="#E6E8E8"/><rect x="78" y="74" width="124" height="7" rx="3.5" fill="#E6E8E8"/><rect x="86" y="90" width="108" height="7" rx="3.5" fill="#E6E8E8"/><circle cx="94" cy="128" r="18" fill="#FBE9E9" stroke="#A50017" stroke-width="1.5"/><path d="M94 116l3.4 6.9 7.6 1.1-5.5 5.4 1.3 7.6-6.8-3.6-6.8 3.6 1.3-7.6-5.5-5.4 7.6-1.1z" fill="#E4A0AB"/><rect x="140" y="120" width="70" height="6" rx="3" fill="#E6E8E8"/><path d="M140 138c14-8 26-8 40 0" stroke="#001F5F" stroke-width="2" stroke-linecap="round"/></svg></div>
+                <div class="req-info">
+                  <div class="req-title-row"><span class="req-title">Commercial Registration <span class="star">*</span></span><span class="req-ar">السجل التجاري</span></div>
+                  <div class="req-desc">Official commercial registration certificate.</div>
+                  <div class="req-meta">PDF · up to 10 MB · single file</div>
+                  <ul class="req-conds"><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Issued within the last 6 months</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Company name matches the merchant account</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Official stamp is visible</span></li></ul>
+                </div>
+                <span class="status-pill required"><span class="dot"></span>Required</span>
+              </div>
+              <div class="req-slots single">
+                <div class="dz-block" data-label="">
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF · up to 10 MB</div><input type="file" accept=".pdf" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">+</span><h2>Additional documents <span class="opt">(Optional)</span></h2></div><span class="count add-count">0 files</span></div>
+          <div class="card-body additional">
+            <p class="card-hint">Upload any other supporting documents relevant to your business — for example a licence, authorization letter, or anything our team requests.</p>
+            <div class="dz-block" data-label="">
+              <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 10 MB · one or more files</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple hidden></label>
+              <div class="dz-files"></div>
+            </div>
+          </div>
+        </section>
+        <div class="review-banner" hidden></div>
+        <div class="submit-bar">
+          <p class="submit-note">Upload all required documents, then submit them for the compliance team to review and approve.</p>
+          <div class="submit-actions">
+            <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
+            <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
+          </div>
+        </div>
+        <div class="proto" hidden>
+          <span class="proto-label">Prototype — simulate the compliance team's decision</span>
+          <button class="proto-link sim-approve" type="button">▶ Approve all</button>
+          <button class="proto-link sim-reject" type="button">▶ Reject a document</button>
+        </div>
+      </div>
+
+      <!-- ===== PROFESSIONAL BUSINESS ===== -->
+      <div class="docs-for" id="docs-professional">
+        <div class="req-summary">
+          <div class="ring"><svg width="44" height="44" viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="#E6E8E8" stroke-width="5"/><circle class="ring-prog" cx="22" cy="22" r="18" fill="none" stroke="#00BCB4" stroke-width="5" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"/></svg><span class="pct ring-pct">0%</span></div>
+          <div class="txt"><b class="sum-title">0 of 2 required documents uploaded</b><span>Upload each required document below so our team can verify your business.</span></div>
+        </div>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">2</span><h2>Required documents</h2></div><span class="count req-count">0 of 2 complete</span></div>
+          <div class="req-list">
+            <div class="req-item">
+              <div class="req-top">
+                <div class="req-thumb"><svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="18" y="24" width="244" height="128" rx="14" fill="#EAF9F4" stroke="#00BCB4" stroke-width="2"/><rect x="40" y="46" width="66" height="84" rx="8" fill="#CDEDE4"/><circle cx="73" cy="78" r="15" fill="#8FD4C4"/><path d="M49 124c0-15 11-24 24-24s24 9 24 24z" fill="#8FD4C4"/><rect x="124" y="52" width="112" height="11" rx="5.5" fill="#00BCB4"/><rect x="124" y="74" width="96" height="8" rx="4" fill="#B7D8CF"/><rect x="124" y="92" width="112" height="8" rx="4" fill="#D6E8E3"/><rect x="124" y="110" width="72" height="8" rx="4" fill="#D6E8E3"/></svg></div>
+                <div class="req-info">
+                  <div class="req-title-row"><span class="req-title">National ID <span class="star">*</span></span><span class="req-ar">بطاقة الرقم القومي</span></div>
+                  <div class="req-desc">Front and back of a valid national identity card.</div>
+                  <div class="req-meta">PDF, JPG, PNG · up to 5 MB · 2 files (labeled)</div>
+                  <ul class="req-conds"><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Both front and back sides are clearly visible</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Document is valid and not expired</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>All corners and text are readable</span></li></ul>
+                </div>
+                <span class="status-pill required"><span class="dot"></span>Required</span>
+              </div>
+              <div class="req-slots">
+                <div class="dz-block" data-label="Front side">
+                  <div class="dz-label">Front side <span class="req">*</span></div>
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+                <div class="dz-block" data-label="Back side">
+                  <div class="dz-label">Back side <span class="req">*</span></div>
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+              </div>
+            </div>
+            <div class="req-item">
+              <div class="req-top">
+                <div class="req-thumb"><svg viewBox="0 0 280 176" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet"><rect x="22" y="34" width="236" height="108" rx="14" fill="#EEF2FB" stroke="#001F5F" stroke-width="1.5"/><rect x="42" y="56" width="56" height="44" rx="6" fill="#C9D5EE"/><path d="M58 90h24M62 82l8-14 8 14" stroke="#5C74A8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="118" y="58" width="120" height="10" rx="5" fill="#001F5F"/><rect x="118" y="78" width="96" height="8" rx="4" fill="#B9C4DE"/><rect x="42" y="112" width="132" height="9" rx="4.5" fill="#8FA0C6"/><rect x="188" y="108" width="50" height="18" rx="4" fill="#001F5F"/></svg></div>
+                <div class="req-info">
+                  <div class="req-title-row"><span class="req-title">Tax Card <span class="star">*</span></span><span class="req-ar">البطاقة الضريبية</span></div>
+                  <div class="req-desc">Valid tax registration card (Tax ID) issued by the authority.</div>
+                  <div class="req-meta">PDF, JPG · up to 5 MB · single file</div>
+                  <ul class="req-conds"><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Tax number is clearly readable</span></li><li><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"/></svg><span>Card is currently valid</span></li></ul>
+                </div>
+                <span class="status-pill required"><span class="dot"></span>Required</span>
+              </div>
+              <div class="req-slots single">
+                <div class="dz-block" data-label="">
+                  <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG · up to 5 MB</div><input type="file" accept=".pdf,.jpg,.jpeg" hidden></label>
+                  <div class="dz-files"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="card">
+          <div class="card-head"><div class="ttl"><span class="step-num">+</span><h2>Additional documents <span class="opt">(Optional)</span></h2></div><span class="count add-count">0 files</span></div>
+          <div class="card-body additional">
+            <p class="card-hint">Upload any other supporting documents relevant to your business — for example a licence, authorization letter, or anything our team requests.</p>
+            <div class="dz-block" data-label="">
+              <label class="dropzone"><svg class="dz-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg><div class="dz-main"><span class="link">Click to browse</span> or drag &amp; drop</div><div class="dz-sub">PDF, JPG, PNG · up to 10 MB · one or more files</div><input type="file" accept=".pdf,.jpg,.jpeg,.png" multiple hidden></label>
+              <div class="dz-files"></div>
+            </div>
+          </div>
+        </section>
+        <div class="review-banner" hidden></div>
+        <div class="submit-bar">
+          <p class="submit-note">Upload all required documents, then submit them for the compliance team to review and approve.</p>
+          <div class="submit-actions">
+            <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
+            <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
+          </div>
+        </div>
+        <div class="proto" hidden>
+          <span class="proto-label">Prototype — simulate the compliance team's decision</span>
+          <button class="proto-link sim-approve" type="button">▶ Approve all</button>
+          <button class="proto-link sim-reject" type="button">▶ Reject a document</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const $ = id => document.getElementById(id);
+  const DOC_ICON = '<svg class="doc" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
+  const RM_ICON = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
+  const extOf = n => (n.split('.').pop() || '').toUpperCase().replace('JPEG', 'JPG');
+
+  let toastTimer;
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  /* ---- Progressive upload enhancement on the static dropzones ---- */
+  function acceptedFormats(sub) {
+    // derive allowed formats from the "PDF, JPG · up to N MB" hint
+    const fmts = (sub.match(/PDF|JPG|JPEG|PNG/gi) || []).map(s => s.toUpperCase().replace('JPEG','JPG'));
+    const size = parseInt((sub.match(/up to (\d+) MB/) || [])[1] || '10', 10);
+    return { fmts: [...new Set(fmts)], size };
+  }
+
+  function wireDropzone(block) {
+    const zone = block.querySelector('.dropzone');
+    const input = block.querySelector('input[type=file]');
+    const filesWrap = block.querySelector('.dz-files');
+    const multiple = input.hasAttribute('multiple');
+    const label = block.dataset.label || '';
+    const { fmts, size } = acceptedFormats(block.querySelector('.dz-sub').textContent);
+
+    function addChip(f) {
+      const chip = document.createElement('div');
+      chip.className = 'dz-fchip';
+      chip.innerHTML = `${DOC_ICON}${label ? `<span class="flabel">${esc(label)}</span>` : ''}<span class="fname" title="${esc(f.name)}">${esc(f.name)}</span><span class="fsize">${esc(fmtSize(f.size))}</span><button class="rm" type="button" aria-label="Remove file">${RM_ICON}</button>`;
+      chip.querySelector('.rm').addEventListener('click', () => {
+        chip.remove();
+        if (!multiple) zone.style.display = 'block';
+        updateStatus(); toast('File removed');
+      });
+      if (!multiple) { filesWrap.innerHTML = ''; }
+      filesWrap.appendChild(chip);
+    }
+
+    function handle(list) {
+      const valid = [];
+      for (const f of [...list]) {
+        if (!fmts.includes(extOf(f.name))) { toast(`Only ${fmts.join(', ')} allowed here`); continue; }
+        if (f.size > size * 1048576) { toast(`${f.name} exceeds the ${size} MB limit`); continue; }
+        valid.push(f);
+      }
+      if (!valid.length) { zone.classList.add('err'); return; }
+      zone.classList.remove('err');
+      valid.forEach(addChip);
+      if (!multiple) zone.style.display = 'none';
+      updateStatus();
+    }
+
+    input.addEventListener('change', e => { handle(e.target.files); e.target.value = ''; });
+    ['dragover','dragenter'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('drag'); }));
+    ['dragleave','dragend'].forEach(ev => zone.addEventListener(ev, () => zone.classList.remove('drag')));
+    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); handle(e.dataTransfer.files); });
+  }
+
+  /* ---- Review state per section: editing | submitted | approved
+         (reject returns the section to editing with a warning banner) ---- */
+  const setPill = (item, cls, txt) => { const p = item.querySelector('.status-pill'); p.className = 'status-pill ' + cls; p.innerHTML = '<span class="dot"></span>' + txt; };
+  const secComplete = sec => { const items = [...sec.querySelectorAll('.req-item')]; return items.length > 0 && items.every(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)); };
+  function lockSection(sec, locked) { sec.classList.toggle('locked', locked); sec.querySelectorAll('input[type=file]').forEach(i => i.disabled = locked); }
+
+  function refreshSection(sec) {
+    const state = sec.dataset.state || 'editing';
+    const items = [...sec.querySelectorAll('.req-item')];
+    if (state === 'editing') {
+      items.forEach(it => {
+        const blocks = it.querySelectorAll('.dz-block');
+        const filled = [...blocks].filter(b => b.querySelector('.dz-files').children.length > 0).length;
+        const cls = filled === 0 ? 'required' : filled < blocks.length ? 'partial' : 'done';
+        setPill(it, cls, filled === 0 ? 'Required' : filled < blocks.length ? `${filled} of ${blocks.length} added` : 'Uploaded');
+      });
+    } else if (state === 'submitted') {
+      items.forEach(it => setPill(it, 'pending', 'Pending review'));
+    } else if (state === 'approved') {
+      items.forEach(it => setPill(it, 'approved', 'Approved'));
+    }
+    const done = items.filter(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)).length;
+    const total = items.length;
+    const set = (sel, txt) => { const el = sec.querySelector(sel); if (el) el.textContent = txt; };
+    set('.ring-pct', (total ? Math.round(done / total * 100) : 0) + '%');
+    set('.sum-title', `${done} of ${total} required documents uploaded`);
+    set('.req-count', `${done} of ${total} complete`);
+    const ring = sec.querySelector('.ring-prog');
+    if (ring) { const C = 2 * Math.PI * 18; ring.setAttribute('stroke-dasharray', C.toFixed(1)); ring.setAttribute('stroke-dashoffset', (C * (1 - (total ? done / total : 0))).toFixed(1)); }
+    const addFiles = sec.querySelector('.additional .dz-files'), addCount = sec.querySelector('.add-count');
+    if (addFiles && addCount) { const n = addFiles.children.length; addCount.textContent = n + (n === 1 ? ' file' : ' files'); }
+    const btn = sec.querySelector('.btn-submit'), draft = sec.querySelector('.btn-draft');
+    if (btn) {
+      if (state === 'editing') { btn.disabled = !secComplete(sec); btn.textContent = 'Submit for review'; }
+      else if (state === 'submitted') { btn.disabled = true; btn.textContent = 'Submitted — pending review'; }
+      else if (state === 'approved') { btn.disabled = true; btn.textContent = 'Approved'; }
+    }
+    if (draft) draft.style.display = state === 'editing' ? '' : 'none';
+  }
+  function updateStatus() { document.querySelectorAll('.docs-for').forEach(refreshSection); }
+
+  const RB_ICON = {
+    pending: 'M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z',
+    approved: 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
+    rejected: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'
+  };
+  function showBanner(sec, type, title, text, withEdit) {
+    const b = sec.querySelector('.review-banner');
+    b.className = 'review-banner ' + type;
+    const time = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    b.innerHTML = `<svg class="rb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="${RB_ICON[type]}"/></svg>`
+      + `<div><div class="rb-title">${esc(title)}</div><div class="rb-text">${esc(text)}</div>`
+      + `<div class="rb-time">${type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : 'Updated '}${time}</div>`
+      + (withEdit ? `<button class="btn btn-ghost btn-sm rb-edit" type="button">Withdraw &amp; edit</button>` : '') + `</div>`;
+    b.hidden = false;
+    const e = b.querySelector('.rb-edit');
+    if (e) e.addEventListener('click', () => editSection(sec));
+  }
+  function hideBanner(sec) { sec.querySelector('.review-banner').hidden = true; }
+  function showProto(sec, show) { const p = sec.querySelector('.proto'); if (p) p.hidden = !show; }
+
+  function submitSection(sec) {
+    if (!secComplete(sec)) { toast('Please upload all required documents first'); return; }
+    sec.dataset.state = 'submitted';
+    lockSection(sec, true);
+    showBanner(sec, 'pending', 'Documents submitted for review', 'Our compliance team will review each document and approve or reject it. You will be notified of the outcome.', true);
+    showProto(sec, true);
+    refreshSection(sec);
+    toast('Submitted for review');
+  }
+  function editSection(sec) {
+    sec.dataset.state = 'editing';
+    lockSection(sec, false);
+    hideBanner(sec); showProto(sec, false);
+    refreshSection(sec);
+  }
+  function approveSection(sec) {
+    sec.dataset.state = 'approved';
+    lockSection(sec, true);
+    showBanner(sec, 'approved', 'All documents approved', 'Your documents were approved by the compliance team. Your account is verified.', false);
+    showProto(sec, false);
+    refreshSection(sec);
+    toast('Documents approved');
+  }
+  function rejectSection(sec) {
+    const items = [...sec.querySelectorAll('.req-item')];
+    const rej = items[items.length - 1];
+    const name = rej.querySelector('.req-title').textContent.replace('*', '').trim();
+    sec.dataset.state = 'editing';
+    lockSection(sec, false);
+    rej.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
+    rej.querySelectorAll('.dropzone').forEach(z => z.style.display = 'block');
+    showBanner(sec, 'rejected', name + ' was rejected', 'The compliance team rejected "' + name + '" (for example: unclear image or expired document). Please upload a new copy and submit again.', false);
+    showProto(sec, false);
+    refreshSection(sec);
+    toast(name + ' rejected — re-upload needed');
+  }
+
+  document.querySelectorAll('.dz-block').forEach(wireDropzone);
+
+  /* Toast when a merchant type is chosen (CSS already reveals the section) */
+  document.querySelectorAll('.acct-radio').forEach(r => r.addEventListener('change', () => {
+    const nm = document.querySelector('.acct-opt[for="' + r.id + '"] .nm');
+    toast('Showing documents for ' + (nm ? nm.textContent : 'account'));
+  }));
+
+  /* ---- Chrome ---- */
+  $('hamburger').addEventListener('click', () => { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); });
+  $('overlay').addEventListener('click', () => { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); });
+  $('configHead').addEventListener('click', () => {
+    const sub = $('configSub'), chev = $('configHead').querySelector('svg');
+    const open = sub.style.display !== 'none';
+    sub.style.display = open ? 'none' : 'flex';
+    chev.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+  });
+  $('langBtn').addEventListener('click', () => {
+    const btn = $('langBtn'); const toAr = btn.textContent === 'عربي';
+    btn.textContent = toAr ? 'English' : 'عربي';
+    toast(toAr ? 'تم التبديل إلى العربية (عرض توضيحي)' : 'Switched to English');
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('sidebar').classList.remove('open'); $('overlay').classList.remove('open'); } });
+
+  /* ---- Submit / review actions ---- */
+  document.querySelectorAll('.btn-submit').forEach(b => b.addEventListener('click', () => submitSection(b.closest('.docs-for'))));
+  document.querySelectorAll('.btn-draft').forEach(b => b.addEventListener('click', () => toast('Draft saved')));
+  document.querySelectorAll('.sim-approve').forEach(b => b.addEventListener('click', () => approveSection(b.closest('.docs-for'))));
+  document.querySelectorAll('.sim-reject').forEach(b => b.addEventListener('click', () => rejectSection(b.closest('.docs-for'))));
+
+  updateStatus();
+</script>
+
+</body>
+</html>

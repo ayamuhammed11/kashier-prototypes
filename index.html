@@ -2,10 +2,123 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="refresh" content="0; url=account-details.html">
-<title>Kashier Prototypes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kashier | Prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#001F5F; --accent:#00BCB4; --accent-10:#EAFFFE; --ocean-10:#F1F6FF;
+    --foreground:#202020; --cadet-base:#556767; --cadet-05:#919C9C;
+    --border:#E6E8E8; --border-subtle:#F5F6F6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Noto Sans',Arial,sans-serif;color:var(--foreground);background:#fff;
+    -webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Outfit',Arial,sans-serif;margin:0;font-weight:700;}
+  a{text-decoration:none;color:inherit;}
+  .hero{background:linear-gradient(180deg,#F7FBFF 0%,#fff 100%);border-bottom:1px solid var(--border-subtle);
+    padding:56px 24px 40px;}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 24px;}
+  .brand{font-family:'Outfit',sans-serif;font-weight:700;font-size:26px;color:var(--accent);letter-spacing:-.01em;margin-bottom:22px;}
+  .hero h1{font-size:38px;color:var(--primary);margin-bottom:12px;}
+  .hero p{font-size:16px;color:var(--cadet-base);max-width:620px;line-height:1.55;margin:0;}
+  .tag{display:inline-block;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--accent);background:var(--accent-10);border-radius:5px;padding:5px 10px;margin-bottom:18px;}
+  .section{padding:40px 0 60px;}
+  .section h2{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--cadet-05);margin-bottom:18px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+  .card{display:flex;flex-direction:column;gap:8px;border:1px solid var(--border);border-radius:12px;padding:20px 22px;
+    background:#fff;transition:border-color .14s ease,box-shadow .14s ease,transform .14s ease;}
+  .card:hover{border-color:var(--primary);box-shadow:0 8px 24px rgba(0,31,95,.08);transform:translateY(-2px);}
+  .card .ic{width:40px;height:40px;border-radius:10px;background:var(--ocean-10);color:var(--primary);
+    display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+  .card .ic svg{width:22px;height:22px;}
+  .card .nm{font-family:'Outfit',sans-serif;font-weight:700;font-size:16px;color:var(--foreground);}
+  .card .ds{font-size:13px;color:var(--cadet-base);line-height:1.5;}
+  .card .go{font-size:13px;font-weight:600;color:var(--primary);margin-top:4px;display:inline-flex;align-items:center;gap:6px;}
+  .badge-new{font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;letter-spacing:.06em;color:var(--accent);
+    background:var(--accent-10);border-radius:4px;padding:2px 6px;vertical-align:middle;margin-left:6px;}
+  footer{border-top:1px solid var(--border-subtle);padding:26px 0;color:var(--cadet-05);font-size:13px;}
+  @media(max-width:600px){.hero{padding:40px 8px 30px;}.hero h1{font-size:30px;}}
+</style>
 </head>
 <body>
-<p>Redirecting to <a href="account-details.html">Account Details</a>…</p>
+  <div class="hero">
+    <div class="wrap">
+      <div class="brand">kashier</div>
+      <span class="tag">Design System · Prototypes</span>
+      <h1>Kashier UI Prototypes</h1>
+      <p>Interactive, front-end prototypes built with the Kashier design system. Open any screen below to explore it. These are static demos with dummy data — no real accounts or transactions.</p>
+    </div>
+  </div>
+
+  <div class="wrap section">
+    <h2>Merchant onboarding & documents</h2>
+    <div class="grid">
+      <a class="card" href="documents-upload.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"/></svg></span>
+        <span class="nm">Documents Upload<span class="badge-new">NEW</span></span>
+        <span class="ds">Account-type–driven document upload with required sets, validation, and submit-for-review flow.</span>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card" href="document-types.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg></span>
+        <span class="nm">Document Types</span>
+        <span class="ds">Configure the document types merchants must submit — formats, size, conditions, and file rules.</span>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card" href="business-info.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21"/></svg></span>
+        <span class="nm">Business Info</span>
+        <span class="ds">Merchant business profile — owner email invitation flow, events log, and account details.</span>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card" href="account-details.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z"/></svg></span>
+        <span class="nm">Account Details</span>
+        <span class="ds">Merchant account overview with feature flags and status controls.</span>
+        <span class="go">Open →</span>
+      </a>
+    </div>
+
+    <h2 style="margin-top:44px;">Balance & operations</h2>
+    <div class="grid">
+      <a class="card" href="on-hold.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg></span>
+        <span class="nm">On-Hold</span>
+        <span class="ds">Held settlements with a status logs tab, bulk actions, and release workflow.</span>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card" href="platform-management.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25a2.25 2.25 0 0 1-2.25-2.25v-2.25Z"/></svg></span>
+        <span class="nm">Platform Management</span>
+        <span class="ds">Platform accounts management with context menus and connected accounts.</span>
+        <span class="go">Open →</span>
+      </a>
+      <a class="card" href="settings.html">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/></svg></span>
+        <span class="nm">Settings</span>
+        <span class="ds">Account settings — personal details, preferences, and active sessions.</span>
+        <span class="go">Open →</span>
+      </a>
+    </div>
+
+    <h2 style="margin-top:44px;">Payments & terminals</h2>
+    <div class="grid">
+      <a class="card" href="payments.html"><span class="nm">Payments</span><span class="ds">Payments list with filters and order drill-down.</span><span class="go">Open →</span></a>
+      <a class="card" href="payments-order-view.html"><span class="nm">Payment Order View</span><span class="ds">Single payment order detail view.</span><span class="go">Open →</span></a>
+      <a class="card" href="order-details.html"><span class="nm">Order Details</span><span class="ds">Order breakdown and timeline.</span><span class="go">Open →</span></a>
+      <a class="card" href="transaction-details.html"><span class="nm">Transaction Details</span><span class="ds">Single transaction detail view.</span><span class="go">Open →</span></a>
+      <a class="card" href="terminals.html"><span class="nm">Terminals</span><span class="ds">Terminals list and management.</span><span class="go">Open →</span></a>
+      <a class="card" href="terminal-details.html"><span class="nm">Terminal Details</span><span class="ds">Single terminal configuration view.</span><span class="go">Open →</span></a>
+      <a class="card" href="home.html"><span class="nm">Home</span><span class="ds">Dashboard home screen.</span><span class="go">Open →</span></a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="wrap">Kashier UI prototypes · static demos with dummy data.</div>
+  </footer>
 </body>
 </html>
