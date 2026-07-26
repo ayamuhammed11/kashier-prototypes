@@ -201,7 +201,7 @@
     border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .dz-fchip .rm:hover { color: var(--destructive); background: var(--destructive-bg); }
   .dz-fchip .dl { border: none; background: none; color: var(--cadet-04); cursor: pointer; width: 26px; height: 26px;
-    border-radius: 6px; display: none; align-items: center; justify-content: center; flex-shrink: 0; }
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .dz-fchip .dl:hover { color: var(--primary); background: var(--ocean-10); }
 
   /* Prompt before a type is chosen */
@@ -231,6 +231,10 @@
   .review-banner.pending { background: var(--ocean-10); border-color: var(--ocean-07); color: var(--primary); }
   .review-banner.approved { background: var(--success-bg); border-color: #AEEBB0; color: var(--success-text); }
   .review-banner.rejected { background: var(--warning-bg); border-color: #F3D48A; color: var(--warning-text); }
+  .review-banner.draft { background: var(--muted); border-color: var(--border); color: var(--cadet-base); }
+  .review-banner.draft .rb-title { color: var(--foreground); }
+  .btn-cancel { color: var(--destructive); }
+  .btn-cancel:hover { background: var(--destructive-bg); }
   .proto { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-top: 1px dashed var(--border);
     padding-top: 14px; margin-bottom: 22px; }
   .proto[hidden] { display: none; }
@@ -407,8 +411,9 @@
         </section>
         <div class="review-banner" hidden></div>
         <div class="submit-bar">
-          <p class="submit-note">Upload all required documents, then submit them for the compliance team to review and approve.</p>
+          <p class="submit-note">Upload all required documents, then submit for review. Once submitted, you can't make changes until the team approves or rejects your request.</p>
           <div class="submit-actions">
+            <button class="btn btn-ghost btn-cancel" type="button">Cancel</button>
             <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
             <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
           </div>
@@ -503,8 +508,9 @@
         </section>
         <div class="review-banner" hidden></div>
         <div class="submit-bar">
-          <p class="submit-note">Upload all required documents, then submit them for the compliance team to review and approve.</p>
+          <p class="submit-note">Upload all required documents, then submit for review. Once submitted, you can't make changes until the team approves or rejects your request.</p>
           <div class="submit-actions">
+            <button class="btn btn-ghost btn-cancel" type="button">Cancel</button>
             <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
             <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
           </div>
@@ -581,8 +587,9 @@
         </section>
         <div class="review-banner" hidden></div>
         <div class="submit-bar">
-          <p class="submit-note">Upload all required documents, then submit them for the compliance team to review and approve.</p>
+          <p class="submit-note">Upload all required documents, then submit for review. Once submitted, you can't make changes until the team approves or rejects your request.</p>
           <div class="submit-actions">
+            <button class="btn btn-ghost btn-cancel" type="button">Cancel</button>
             <button class="btn btn-ghost btn-draft" type="button">Save draft</button>
             <button class="btn btn-primary btn-submit" type="button" disabled>Submit for review</button>
           </div>
@@ -674,7 +681,7 @@
   function refreshSection(sec) {
     const state = sec.dataset.state || 'editing';
     const items = [...sec.querySelectorAll('.req-item')];
-    if (state === 'editing') {
+    if (state === 'editing' || state === 'draft') {
       items.forEach(it => {
         const blocks = it.querySelectorAll('.dz-block');
         const filled = [...blocks].filter(b => b.querySelector('.dz-files').children.length > 0).length;
@@ -696,34 +703,35 @@
     if (ring) { const C = 2 * Math.PI * 18; ring.setAttribute('stroke-dasharray', C.toFixed(1)); ring.setAttribute('stroke-dashoffset', (C * (1 - (total ? done / total : 0))).toFixed(1)); }
     const addFiles = sec.querySelector('.additional .dz-files'), addCount = sec.querySelector('.add-count');
     if (addFiles && addCount) { const n = addFiles.children.length; addCount.textContent = n + (n === 1 ? ' file' : ' files'); }
-    const btn = sec.querySelector('.btn-submit'), draft = sec.querySelector('.btn-draft');
-    if (btn) {
-      if (state === 'editing') { btn.disabled = !secComplete(sec); btn.textContent = 'Submit for review'; }
-      else if (state === 'submitted') { btn.disabled = true; btn.textContent = 'Submitted — pending review'; }
-      else if (state === 'approved') { btn.disabled = true; btn.textContent = 'Approved'; }
-    }
-    if (draft) draft.style.display = state === 'editing' ? '' : 'none';
+    // Action bar (Cancel / Save draft / Submit) is only available while editing
+    const bar = sec.querySelector('.submit-bar');
+    if (bar) bar.style.display = state === 'editing' ? '' : 'none';
+    const btn = sec.querySelector('.btn-submit');
+    if (btn && state === 'editing') btn.disabled = !secComplete(sec);
   }
   function updateStatus() { document.querySelectorAll('.docs-for').forEach(refreshSection); }
 
   const RB_ICON = {
     pending: 'M11.25 11.25l.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z',
     approved: 'M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z',
-    rejected: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z'
+    rejected: 'M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z',
+    draft: 'M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z'
   };
-  function showBanner(sec, type, title, text, withEdit) {
+  function showBanner(sec, type, title, text) {
     const b = sec.querySelector('.review-banner');
     b.className = 'review-banner ' + type;
     const time = new Date().toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const label = type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : type === 'draft' ? 'Saved ' : 'Updated ';
+    let btns = '';
+    if (type === 'draft') btns = `<button class="btn btn-primary btn-sm rb-continue" type="button">Continue editing</button>`;
+    else if (type === 'approved') btns = `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button>`;
     b.innerHTML = `<svg class="rb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="${RB_ICON[type]}"/></svg>`
       + `<div><div class="rb-title">${esc(title)}</div><div class="rb-text">${esc(text)}</div>`
-      + `<div class="rb-time">${type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : 'Updated '}${time}</div>`
-      + (withEdit ? `<button class="btn btn-ghost btn-sm rb-edit" type="button">Withdraw &amp; edit</button>` : '')
-      + (type === 'approved' ? `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button>` : '')
-      + `</div>`;
+      + `<div class="rb-time">${label}${time}</div>`
+      + btns + `</div>`;
     b.hidden = false;
-    const e = b.querySelector('.rb-edit');
-    if (e) e.addEventListener('click', () => editSection(sec));
+    const cont = b.querySelector('.rb-continue');
+    if (cont) cont.addEventListener('click', () => editSection(sec));
     const dl = b.querySelector('.rb-download');
     if (dl) dl.addEventListener('click', () => downloadAll(sec));
   }
@@ -750,10 +758,29 @@
     if (!secComplete(sec)) { toast('Please upload all required documents first'); return; }
     sec.dataset.state = 'submitted';
     lockSection(sec, true);
-    showBanner(sec, 'pending', 'Documents submitted for review', 'Our compliance team will review each document and approve or reject it. You will be notified of the outcome.', true);
+    showBanner(sec, 'pending', 'Documents submitted for review', 'Your documents are now with our compliance team. You can’t make changes until they approve or reject your request.');
     showProto(sec, true);
     refreshSection(sec);
     toast('Submitted for review');
+  }
+  function saveDraft(sec) {
+    const items = [...sec.querySelectorAll('.req-item')];
+    const done = items.filter(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)).length;
+    sec.dataset.state = 'draft';
+    lockSection(sec, true);
+    showBanner(sec, 'draft', 'Draft saved', `Your progress is saved (${done} of ${items.length} required documents uploaded). Click “Continue editing” whenever you want to finish and submit.`);
+    showProto(sec, false);
+    refreshSection(sec);
+    toast('Draft saved');
+  }
+  function cancelSection(sec) {
+    sec.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
+    sec.querySelectorAll('.dropzone').forEach(z => { z.style.display = 'block'; z.classList.remove('err'); });
+    sec.dataset.state = 'editing';
+    lockSection(sec, false);
+    hideBanner(sec); showProto(sec, false);
+    refreshSection(sec);
+    toast('Changes reset');
   }
   function editSection(sec) {
     sec.dataset.state = 'editing';
@@ -764,7 +791,7 @@
   function approveSection(sec) {
     sec.dataset.state = 'approved';
     lockSection(sec, true);
-    showBanner(sec, 'approved', 'All documents approved', 'Your documents were approved by the compliance team. Your account is verified.', false);
+    showBanner(sec, 'approved', 'All documents approved', 'Your documents were approved by the compliance team. Your account is verified.');
     showProto(sec, false);
     refreshSection(sec);
     toast('Documents approved');
@@ -777,7 +804,7 @@
     lockSection(sec, false);
     rej.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
     rej.querySelectorAll('.dropzone').forEach(z => z.style.display = 'block');
-    showBanner(sec, 'rejected', name + ' was rejected', 'The compliance team rejected "' + name + '" (for example: unclear image or expired document). Please upload a new copy and submit again.', false);
+    showBanner(sec, 'rejected', name + ' was rejected', 'The compliance team rejected "' + name + '" (for example: unclear image or expired document). Please upload a new copy and submit again.');
     showProto(sec, false);
     refreshSection(sec);
     toast(name + ' rejected — re-upload needed');
@@ -809,7 +836,8 @@
 
   /* ---- Submit / review actions ---- */
   document.querySelectorAll('.btn-submit').forEach(b => b.addEventListener('click', () => submitSection(b.closest('.docs-for'))));
-  document.querySelectorAll('.btn-draft').forEach(b => b.addEventListener('click', () => toast('Draft saved')));
+  document.querySelectorAll('.btn-draft').forEach(b => b.addEventListener('click', () => saveDraft(b.closest('.docs-for'))));
+  document.querySelectorAll('.btn-cancel').forEach(b => b.addEventListener('click', () => cancelSection(b.closest('.docs-for'))));
   document.querySelectorAll('.sim-approve').forEach(b => b.addEventListener('click', () => approveSection(b.closest('.docs-for'))));
   document.querySelectorAll('.sim-reject').forEach(b => b.addEventListener('click', () => rejectSection(b.closest('.docs-for'))));
 
