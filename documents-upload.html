@@ -235,6 +235,11 @@
   .review-banner.draft .rb-title { color: var(--foreground); }
   .btn-cancel { color: var(--destructive); }
   .btn-cancel:hover { background: var(--destructive-bg); }
+  /* Lock the account type + dim the section while a request is awaiting feedback */
+  .acct-card.locked-acct { opacity: .55; }
+  .acct-card.locked-acct .acct-opt { pointer-events: none; }
+  .docs-for[data-state="submitted"] > .req-summary,
+  .docs-for[data-state="submitted"] > section.card { opacity: .6; transition: opacity .15s ease; }
   .proto { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; border-top: 1px dashed var(--border);
     padding-top: 14px; margin-bottom: 22px; }
   .proto[hidden] { display: none; }
@@ -678,6 +683,16 @@
   const secComplete = sec => { const items = [...sec.querySelectorAll('.req-item')]; return items.length > 0 && items.every(it => [...it.querySelectorAll('.dz-block')].every(b => b.querySelector('.dz-files').children.length > 0)); };
   function lockSection(sec, locked) { sec.classList.toggle('locked', locked); sec.querySelectorAll('input[type=file]').forEach(i => i.disabled = locked); }
 
+  /* Lock the account-type selector whenever the active section is not being edited */
+  function syncAccountLock() {
+    const r = document.querySelector('.acct-radio:checked');
+    const sec = r ? document.getElementById('docs-' + r.id.replace('acct-', '')) : null;
+    const locked = !!(sec && sec.dataset.state && sec.dataset.state !== 'editing');
+    document.querySelectorAll('.acct-radio').forEach(x => x.disabled = locked);
+    const card = document.querySelector('.acct-card');
+    if (card) card.classList.toggle('locked-acct', locked);
+  }
+
   function refreshSection(sec) {
     const state = sec.dataset.state || 'editing';
     const items = [...sec.querySelectorAll('.req-item')];
@@ -708,6 +723,7 @@
     if (bar) bar.style.display = state === 'editing' ? '' : 'none';
     const btn = sec.querySelector('.btn-submit');
     if (btn && state === 'editing') btn.disabled = !secComplete(sec);
+    syncAccountLock();
   }
   function updateStatus() { document.querySelectorAll('.docs-for').forEach(refreshSection); }
 
