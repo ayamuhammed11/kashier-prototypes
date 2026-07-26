@@ -74,7 +74,9 @@
   .breadcrumb { font-size: 13px; color: var(--cadet-04); margin-bottom: 12px; }
   .breadcrumb .sep { margin: 0 6px; color: var(--cadet-06); }
   .breadcrumb .current { color: var(--cadet-base); }
-  .page-head { margin-bottom: 22px; }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; flex-wrap: wrap; margin-bottom: 22px; }
+  .head-actions { display: flex; gap: 12px; flex-shrink: 0; }
+  .head-actions .btn[hidden] { display: none; }
   .page-head h1 { font-size: 30px; color: var(--primary); margin-bottom: 8px; }
   .page-head .sub { font-size: 14px; color: var(--cadet-base); max-width: 560px; line-height: 1.5; margin: 0; }
 
@@ -315,8 +317,16 @@
       <div class="breadcrumb">Business Profile <span class="sep">/</span> <span class="current">Documents</span></div>
 
       <div class="page-head">
-        <h1>Documents</h1>
-        <p class="sub">First choose your account type. The documents you need to upload will then appear below, based on your account's requirements.</p>
+        <div>
+          <h1>Documents</h1>
+          <p class="sub">First choose your account type. The documents you need to upload will then appear below, based on your account's requirements.</p>
+        </div>
+        <div class="head-actions">
+          <button class="btn btn-primary" id="topEdit" type="button" hidden>
+            <svg class="hi-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Z"/></svg>
+            Edit
+          </button>
+        </div>
       </div>
 
       <!-- Account-type radios (drive the CSS reveal) -->
@@ -687,10 +697,14 @@
   function syncAccountLock() {
     const r = document.querySelector('.acct-radio:checked');
     const sec = r ? document.getElementById('docs-' + r.id.replace('acct-', '')) : null;
-    const locked = !!(sec && sec.dataset.state && sec.dataset.state !== 'editing');
+    const state = sec ? (sec.dataset.state || 'editing') : 'editing';
+    const locked = !!(sec && state !== 'editing');
     document.querySelectorAll('.acct-radio').forEach(x => x.disabled = locked);
     const card = document.querySelector('.acct-card');
     if (card) card.classList.toggle('locked-acct', locked);
+    // Top-right Edit button: shown only when the current documents are approved/locked
+    const topEdit = document.getElementById('topEdit');
+    if (topEdit) { topEdit._sec = sec; topEdit.hidden = !(sec && state === 'approved'); }
   }
 
   function refreshSection(sec) {
@@ -741,7 +755,7 @@
     const label = type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : type === 'draft' ? 'Saved ' : 'Updated ';
     let btns = '';
     if (type === 'draft') btns = `<button class="btn btn-primary btn-sm rb-continue" type="button">Continue editing</button>`;
-    else if (type === 'approved') btns = `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button><button class="btn btn-primary btn-sm rb-editbtn" type="button">Edit</button>`;
+    else if (type === 'approved') btns = `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button>`;
     b.innerHTML = `<svg class="rb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="${RB_ICON[type]}"/></svg>`
       + `<div><div class="rb-title">${esc(title)}</div><div class="rb-text">${esc(text)}</div>`
       + `<div class="rb-time">${label}${time}</div>`
@@ -942,6 +956,7 @@
   document.querySelectorAll('.btn-cancel').forEach(b => b.addEventListener('click', () => cancelSection(b.closest('.docs-for'))));
   document.querySelectorAll('.sim-approve').forEach(b => b.addEventListener('click', () => approveSection(b.closest('.docs-for'))));
   document.querySelectorAll('.sim-reject').forEach(b => b.addEventListener('click', () => rejectSection(b.closest('.docs-for'))));
+  $('topEdit').addEventListener('click', () => { const s = $('topEdit')._sec; if (s) editSection(s); });
 
   seedOnboarding();   // open on the locked onboarding view (account type + documents) with an Edit button
   updateStatus();
