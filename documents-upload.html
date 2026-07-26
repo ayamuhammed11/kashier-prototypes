@@ -227,7 +227,7 @@
   .review-banner .rb-title { font-weight: 700; font-family: 'Outfit', sans-serif; }
   .review-banner .rb-text { margin-top: 3px; }
   .review-banner .rb-time { font-size: 12px; opacity: .8; margin-top: 6px; }
-  .review-banner .rb-edit { margin-top: 12px; }
+  .review-banner .rb-continue, .review-banner .rb-download, .review-banner .rb-editbtn { margin-top: 12px; margin-right: 10px; }
   .review-banner.pending { background: var(--ocean-10); border-color: var(--ocean-07); color: var(--primary); }
   .review-banner.approved { background: var(--success-bg); border-color: #AEEBB0; color: var(--success-text); }
   .review-banner.rejected { background: var(--warning-bg); border-color: #F3D48A; color: var(--warning-text); }
@@ -651,6 +651,7 @@
       chip.querySelector('.rm').addEventListener('click', () => {
         chip.remove();
         if (!multiple) zone.style.display = 'block';
+        const it = block.closest('.req-item'); if (it) delete it.dataset.rejected;
         updateStatus(); toast('File removed');
       });
       if (!multiple) { filesWrap.innerHTML = ''; }
@@ -667,6 +668,7 @@
       if (!valid.length) { zone.classList.add('err'); return; }
       zone.classList.remove('err');
       valid.forEach(addChip);
+      const it = block.closest('.req-item'); if (it) delete it.dataset.rejected;
       if (!multiple) zone.style.display = 'none';
       updateStatus();
     }
@@ -698,6 +700,7 @@
     const items = [...sec.querySelectorAll('.req-item')];
     if (state === 'editing' || state === 'draft') {
       items.forEach(it => {
+        if (state === 'editing' && it.dataset.rejected === '1') { setPill(it, 'rejected', 'Rejected — replace'); return; }
         const blocks = it.querySelectorAll('.dz-block');
         const filled = [...blocks].filter(b => b.querySelector('.dz-files').children.length > 0).length;
         const cls = filled === 0 ? 'required' : filled < blocks.length ? 'partial' : 'done';
@@ -740,7 +743,7 @@
     const label = type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : type === 'draft' ? 'Saved ' : 'Updated ';
     let btns = '';
     if (type === 'draft') btns = `<button class="btn btn-primary btn-sm rb-continue" type="button">Continue editing</button>`;
-    else if (type === 'approved') btns = `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button>`;
+    else if (type === 'approved') btns = `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button><button class="btn btn-primary btn-sm rb-editbtn" type="button">Edit</button>`;
     b.innerHTML = `<svg class="rb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="${RB_ICON[type]}"/></svg>`
       + `<div><div class="rb-title">${esc(title)}</div><div class="rb-text">${esc(text)}</div>`
       + `<div class="rb-time">${label}${time}</div>`
@@ -748,6 +751,8 @@
     b.hidden = false;
     const cont = b.querySelector('.rb-continue');
     if (cont) cont.addEventListener('click', () => editSection(sec));
+    const editBtn = b.querySelector('.rb-editbtn');
+    if (editBtn) editBtn.addEventListener('click', () => editSection(sec));
     const dl = b.querySelector('.rb-download');
     if (dl) dl.addEventListener('click', () => downloadAll(sec));
   }
@@ -772,6 +777,7 @@
 
   function submitSection(sec) {
     if (!secComplete(sec)) { toast('Please upload all required documents first'); return; }
+    sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
     sec.dataset.state = 'submitted';
     lockSection(sec, true);
     showBanner(sec, 'pending', 'Documents submitted for review', 'Your documents are now with our compliance team. You can’t make changes until they approve or reject your request.');
@@ -790,6 +796,7 @@
     toast('Draft saved');
   }
   function cancelSection(sec) {
+    sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
     sec.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
     sec.querySelectorAll('.dropzone').forEach(z => { z.style.display = 'block'; z.classList.remove('err'); });
     sec.dataset.state = 'editing';
@@ -816,14 +823,13 @@
     const items = [...sec.querySelectorAll('.req-item')];
     const rej = items[items.length - 1];
     const name = rej.querySelector('.req-title').textContent.replace('*', '').trim();
+    rej.dataset.rejected = '1';                 // flag the rejected document; keep ALL uploaded files
     sec.dataset.state = 'editing';
     lockSection(sec, false);
-    rej.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
-    rej.querySelectorAll('.dropzone').forEach(z => z.style.display = 'block');
-    showBanner(sec, 'rejected', name + ' was rejected', 'The compliance team rejected "' + name + '" (for example: unclear image or expired document). Please upload a new copy and submit again.');
+    showBanner(sec, 'rejected', name + ' was rejected', 'The compliance team rejected "' + name + '". Your uploaded files are kept — download it to review, then replace it and submit again. Your other documents are unchanged.');
     showProto(sec, false);
     refreshSection(sec);
-    toast(name + ' rejected — re-upload needed');
+    toast(name + ' rejected');
   }
 
   document.querySelectorAll('.dz-block').forEach(wireDropzone);
