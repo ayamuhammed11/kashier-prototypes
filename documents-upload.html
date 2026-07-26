@@ -200,6 +200,9 @@
   .dz-fchip .rm { border: none; background: none; color: var(--cadet-04); cursor: pointer; width: 26px; height: 26px;
     border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .dz-fchip .rm:hover { color: var(--destructive); background: var(--destructive-bg); }
+  .dz-fchip .dl { border: none; background: none; color: var(--cadet-04); cursor: pointer; width: 26px; height: 26px;
+    border-radius: 6px; display: none; align-items: center; justify-content: center; flex-shrink: 0; }
+  .dz-fchip .dl:hover { color: var(--primary); background: var(--ocean-10); }
 
   /* Prompt before a type is chosen */
   .prompt { border: 1px dashed var(--border); border-radius: 12px; background: #FAFBFB; text-align: center; padding: 44px 24px; }
@@ -236,6 +239,7 @@
   .proto-link:hover { color: var(--primary); }
   .docs-for.locked .dropzone { pointer-events: none; opacity: .5; border-style: solid; background: var(--muted); }
   .docs-for.locked .dz-fchip .rm { display: none; }
+  .docs-for.locked .dz-fchip .dl { display: flex; }
   .status-pill.pending { background: var(--ocean-10); color: var(--primary); }
   .status-pill.pending .dot { background: var(--primary); }
   .status-pill.approved { background: var(--success-bg); color: var(--success-text); }
@@ -599,6 +603,7 @@
   const $ = id => document.getElementById(id);
   const DOC_ICON = '<svg class="doc" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>';
   const RM_ICON = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12"/></svg>';
+  const DL_ICON = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>';
   const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
   const fmtSize = b => b >= 1048576 ? (b / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1024)) + ' KB';
   const extOf = n => (n.split('.').pop() || '').toUpperCase().replace('JPEG', 'JPG');
@@ -628,7 +633,9 @@
     function addChip(f) {
       const chip = document.createElement('div');
       chip.className = 'dz-fchip';
-      chip.innerHTML = `${DOC_ICON}${label ? `<span class="flabel">${esc(label)}</span>` : ''}<span class="fname" title="${esc(f.name)}">${esc(f.name)}</span><span class="fsize">${esc(fmtSize(f.size))}</span><button class="rm" type="button" aria-label="Remove file">${RM_ICON}</button>`;
+      chip._file = f;
+      chip.innerHTML = `${DOC_ICON}${label ? `<span class="flabel">${esc(label)}</span>` : ''}<span class="fname" title="${esc(f.name)}">${esc(f.name)}</span><span class="fsize">${esc(fmtSize(f.size))}</span><button class="dl" type="button" aria-label="Download file" title="Download">${DL_ICON}</button><button class="rm" type="button" aria-label="Remove file" title="Remove">${RM_ICON}</button>`;
+      chip.querySelector('.dl').addEventListener('click', () => downloadFile(f.name, chip._file));
       chip.querySelector('.rm').addEventListener('click', () => {
         chip.remove();
         if (!multiple) zone.style.display = 'block';
@@ -711,12 +718,32 @@
     b.innerHTML = `<svg class="rb-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="${RB_ICON[type]}"/></svg>`
       + `<div><div class="rb-title">${esc(title)}</div><div class="rb-text">${esc(text)}</div>`
       + `<div class="rb-time">${type === 'pending' ? 'Submitted ' : type === 'approved' ? 'Reviewed ' : 'Updated '}${time}</div>`
-      + (withEdit ? `<button class="btn btn-ghost btn-sm rb-edit" type="button">Withdraw &amp; edit</button>` : '') + `</div>`;
+      + (withEdit ? `<button class="btn btn-ghost btn-sm rb-edit" type="button">Withdraw &amp; edit</button>` : '')
+      + (type === 'approved' ? `<button class="btn btn-ghost btn-sm rb-download" type="button">${DL_ICON}Download all documents</button>` : '')
+      + `</div>`;
     b.hidden = false;
     const e = b.querySelector('.rb-edit');
     if (e) e.addEventListener('click', () => editSection(sec));
+    const dl = b.querySelector('.rb-download');
+    if (dl) dl.addEventListener('click', () => downloadAll(sec));
   }
   function hideBanner(sec) { sec.querySelector('.review-banner').hidden = true; }
+
+  /* ---- Download uploaded files (real File kept in memory; placeholder as fallback) ---- */
+  function downloadFile(name, file) {
+    const blob = (file instanceof File) ? file : new Blob(['Kashier prototype — placeholder for uploaded document: ' + name], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name || 'document';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+  }
+  function downloadAll(sec) {
+    const chips = [...sec.querySelectorAll('.dz-fchip')];
+    if (!chips.length) { toast('No documents to download'); return; }
+    chips.forEach((chip, i) => setTimeout(() => downloadFile(chip.querySelector('.fname').textContent, chip._file), i * 350));
+    toast('Downloading ' + chips.length + ' document' + (chips.length > 1 ? 's' : ''));
+  }
   function showProto(sec, show) { const p = sec.querySelector('.proto'); if (p) p.hidden = !show; }
 
   function submitSection(sec) {
