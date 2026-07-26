@@ -321,7 +321,7 @@
 
       <!-- Account-type radios (drive the CSS reveal) -->
       <input class="acct-radio" type="radio" name="accttype" id="acct-individual">
-      <input class="acct-radio" type="radio" name="accttype" id="acct-registered">
+      <input class="acct-radio" type="radio" name="accttype" id="acct-registered" checked>
       <input class="acct-radio" type="radio" name="accttype" id="acct-professional">
 
       <!-- STEP 1 — Account type -->
@@ -634,6 +634,15 @@
     return { fmts: [...new Set(fmts)], size };
   }
 
+  /* Build a file chip (download/remove handled via delegation, so seeded chips work too) */
+  function buildChip(f, label) {
+    const chip = document.createElement('div');
+    chip.className = 'dz-fchip';
+    chip._file = f;
+    chip.innerHTML = `${DOC_ICON}${label ? `<span class="flabel">${esc(label)}</span>` : ''}<span class="fname" title="${esc(f.name)}">${esc(f.name)}</span><span class="fsize">${esc(fmtSize(f.size))}</span><button class="dl" type="button" aria-label="Download file" title="Download">${DL_ICON}</button><button class="rm" type="button" aria-label="Remove file" title="Remove">${RM_ICON}</button>`;
+    return chip;
+  }
+
   function wireDropzone(block) {
     const zone = block.querySelector('.dropzone');
     const input = block.querySelector('input[type=file]');
@@ -643,19 +652,8 @@
     const { fmts, size } = acceptedFormats(block.querySelector('.dz-sub').textContent);
 
     function addChip(f) {
-      const chip = document.createElement('div');
-      chip.className = 'dz-fchip';
-      chip._file = f;
-      chip.innerHTML = `${DOC_ICON}${label ? `<span class="flabel">${esc(label)}</span>` : ''}<span class="fname" title="${esc(f.name)}">${esc(f.name)}</span><span class="fsize">${esc(fmtSize(f.size))}</span><button class="dl" type="button" aria-label="Download file" title="Download">${DL_ICON}</button><button class="rm" type="button" aria-label="Remove file" title="Remove">${RM_ICON}</button>`;
-      chip.querySelector('.dl').addEventListener('click', () => downloadFile(f.name, chip._file));
-      chip.querySelector('.rm').addEventListener('click', () => {
-        chip.remove();
-        if (!multiple) zone.style.display = 'block';
-        const it = block.closest('.req-item'); if (it) delete it.dataset.rejected;
-        updateStatus(); toast('File removed');
-      });
-      if (!multiple) { filesWrap.innerHTML = ''; }
-      filesWrap.appendChild(chip);
+      if (!multiple) filesWrap.innerHTML = '';
+      filesWrap.appendChild(buildChip(f, label));
     }
 
     function handle(list) {
@@ -795,7 +793,38 @@
     refreshSection(sec);
     toast('Draft saved');
   }
+  /* Snapshot the current documents + state so Cancel can restore them (discard edits) */
+  function snapshotSection(sec) {
+    sec._snapshot = {
+      state: sec.dataset.state || 'editing',
+      blocks: [...sec.querySelectorAll('.dz-block')].map(block =>
+        [...block.querySelectorAll('.dz-fchip')].map(c => ({
+          file: c._file, name: c.querySelector('.fname').textContent,
+          label: c.querySelector('.flabel') ? c.querySelector('.flabel').textContent : ''
+        }))
+      )
+    };
+  }
+  function restoreSection(sec) {
+    const snap = sec._snapshot;
+    [...sec.querySelectorAll('.dz-block')].forEach((block, i) => {
+      const filesWrap = block.querySelector('.dz-files');
+      const multiple = block.querySelector('input[type=file]').hasAttribute('multiple');
+      const chips = (snap && snap.blocks[i]) || [];
+      filesWrap.innerHTML = '';
+      chips.forEach(cd => filesWrap.appendChild(buildChip(cd.file || seedFile(cd.name, 200), cd.label)));
+      block.querySelector('.dropzone').style.display = (!multiple && chips.length) ? 'none' : 'block';
+    });
+    sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
+    const prev = (snap && snap.state) || 'editing';
+    sec.dataset.state = prev;
+    if (prev === 'approved') { lockSection(sec, true); showBanner(sec, 'approved', 'Your documents are approved', 'Your documents are approved. Click Edit to make changes.'); showProto(sec, false); }
+    else if (prev === 'submitted') { lockSection(sec, true); showBanner(sec, 'pending', 'Documents submitted for review', 'Your documents are with our compliance team. You can’t make changes until they approve or reject your request.'); showProto(sec, true); }
+    else { lockSection(sec, false); hideBanner(sec); showProto(sec, false); }
+    refreshSection(sec);
+  }
   function cancelSection(sec) {
+    if (sec._snapshot) { restoreSection(sec); toast('Changes discarded'); return; }
     sec.querySelectorAll('.req-item').forEach(it => delete it.dataset.rejected);
     sec.querySelectorAll('.dz-files').forEach(f => f.innerHTML = '');
     sec.querySelectorAll('.dropzone').forEach(z => { z.style.display = 'block'; z.classList.remove('err'); });
@@ -806,6 +835,7 @@
     toast('Changes reset');
   }
   function editSection(sec) {
+    snapshotSection(sec);          // remember current docs + state to restore on Cancel
     sec.dataset.state = 'editing';
     lockSection(sec, false);
     hideBanner(sec); showProto(sec, false);
@@ -832,7 +862,57 @@
     toast(name + ' rejected');
   }
 
+  /* ---- Onboarding seed: the documents the merchant provided when they signed up ---- */
+  const SEED = {
+    'National ID': [ { label: 'Front side', name: 'national-id-front.jpg', kb: 420 }, { label: 'Back side', name: 'national-id-back.jpg', kb: 400 } ],
+    'Tax Card': [ { name: 'tax-card.pdf', kb: 280 } ],
+    'Commercial Registration': [ { name: 'commercial-registration.pdf', kb: 760 } ]
+  };
+  function seedFile(name, kb) {
+    return new File([new Uint8Array(kb * 1024)], name, { type: /\.pdf$/i.test(name) ? 'application/pdf' : 'image/jpeg' });
+  }
+  function seedOnboarding() {
+    const sec = document.getElementById('docs-registered');
+    if (!sec) return;
+    [...sec.querySelectorAll('.req-item')].forEach(it => {
+      const title = it.querySelector('.req-title').textContent.replace('*', '').trim();
+      const seed = SEED[title] || [];
+      [...it.querySelectorAll('.dz-block')].forEach((block, i) => {
+        const s = seed[i]; if (!s) return;
+        const filesWrap = block.querySelector('.dz-files');
+        filesWrap.innerHTML = '';
+        filesWrap.appendChild(buildChip(seedFile(s.name, s.kb), s.label || block.dataset.label || ''));
+        block.querySelector('.dropzone').style.display = 'none';
+      });
+    });
+    document.getElementById('acct-registered').checked = true;
+    sec.dataset.state = 'approved';
+    lockSection(sec, true);
+    showBanner(sec, 'approved', 'Your onboarding documents', 'These are the documents you provided when you signed up, and they are approved. Click Edit to make changes.');
+    showProto(sec, false);
+    refreshSection(sec);
+  }
+
   document.querySelectorAll('.dz-block').forEach(wireDropzone);
+
+  /* Download / remove a file (delegated so seeded and uploaded chips both work) */
+  document.addEventListener('click', e => {
+    const dlBtn = e.target.closest('.dz-fchip .dl');
+    const rmBtn = e.target.closest('.dz-fchip .rm');
+    if (dlBtn) {
+      const chip = dlBtn.closest('.dz-fchip');
+      downloadFile(chip.querySelector('.fname').textContent, chip._file);
+    } else if (rmBtn) {
+      const chip = rmBtn.closest('.dz-fchip');
+      const block = chip.closest('.dz-block');
+      const zone = block.querySelector('.dropzone');
+      const multiple = block.querySelector('input[type=file]').hasAttribute('multiple');
+      chip.remove();
+      if (!multiple) zone.style.display = 'block';
+      const it = block.closest('.req-item'); if (it) delete it.dataset.rejected;
+      updateStatus(); toast('File removed');
+    }
+  });
 
   /* Toast when a merchant type is chosen (CSS already reveals the section) */
   document.querySelectorAll('.acct-radio').forEach(r => r.addEventListener('change', () => {
@@ -863,6 +943,7 @@
   document.querySelectorAll('.sim-approve').forEach(b => b.addEventListener('click', () => approveSection(b.closest('.docs-for'))));
   document.querySelectorAll('.sim-reject').forEach(b => b.addEventListener('click', () => rejectSection(b.closest('.docs-for'))));
 
+  seedOnboarding();   // open on the locked onboarding view (account type + documents) with an Edit button
   updateStatus();
 </script>
 
