@@ -139,6 +139,47 @@
 
   /* Table */
   .table-card { border: 1px solid var(--border-subtle); border-radius: 8px; overflow: hidden; background: #fff; }
+
+  /* Pagination */
+  .pagination-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; flex-wrap: wrap; gap: 10px;
+    border-top: 1px solid var(--border-subtle); }
+  .pagination-info { font-size: 13px; color: var(--foreground); }
+  .rpp { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--foreground); }
+  .rpp select { border: none; background: none; font-size: 13px; font-weight: 600; color: var(--foreground); cursor: pointer; font-family: inherit; }
+  .pagination { display: flex; align-items: center; gap: 4px; }
+  .page-btn { min-width: 30px; height: 30px; padding: 0 6px; display: flex; align-items: center; justify-content: center;
+    border-radius: var(--radius); border: 1.5px solid transparent; background: #fff; font-size: 12px; font-weight: 600;
+    color: var(--foreground); cursor: pointer; }
+  .page-btn.active { background: var(--ocean-10); color: var(--primary); border-color: var(--primary); }
+  .page-btn:disabled { opacity: .4; cursor: not-allowed; }
+  .page-btn:hover:not(.active):not(:disabled) { border-color: var(--border); }
+
+  /* Events card */
+  .card { background: #fff; border: 1px solid var(--border-subtle); border-radius: 8px; margin-top: 24px; }
+  .card-head { display: flex; align-items: flex-start; gap: 10px; padding: 20px 22px 0; }
+  .card-head .ch-icon { color: var(--cadet-base); margin-top: 2px; }
+  .card-head h2 { font-size: 18px; color: var(--foreground); }
+  .card-head .ch-sub { font-size: 13px; color: var(--cadet-04); line-height: 1.5; margin: 6px 0 0; max-width: 640px; }
+  .card-body { padding: 18px 22px 22px; }
+
+  /* Events feed */
+  .event-item { display: flex; align-items: flex-start; gap: 16px; padding: 18px 4px;
+    border-bottom: 1px solid var(--border-subtle); }
+  .event-item:last-child { border-bottom: none; }
+  .ev-icon { width: 40px; height: 40px; border-radius: 50%; background: #E3E5E5; color: var(--cadet-base);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ev-icon svg { width: 17px; height: 17px; }
+  /* Icon is tinted by action — green: created · yellow: updated · red: deleted */
+  .ev-icon.created { background: var(--success-bg); color: #388E3B; }
+  .ev-icon.updated { background: #FFF7E8; color: #92620A; }
+  .ev-icon.deleted { background: var(--destructive-bg); color: var(--destructive); }
+  .ev-icon.captured { background: var(--ocean-10); color: var(--primary); }
+  .ev-body { min-width: 0; padding-top: 1px; }
+  .ev-ts { font-size: 13px; color: var(--cadet-04); }
+  .ev-sentence { font-size: 14px; color: var(--cadet-04); margin-top: 7px; line-height: 1.45; }
+  .ev-sentence b { font-weight: 700; color: var(--foreground); }
+  .events-empty { display: none; text-align: center; font-size: 13px; color: var(--cadet-05); padding: 26px 0 14px; }
+  .events-empty.show { display: block; }
   .table-scroll { overflow-x: auto; }
   table { width: 100%; border-collapse: collapse; min-width: 760px; }
   thead th { text-align: left; font-family: 'Noto Sans', sans-serif; font-size: 11px; font-weight: 700;
@@ -227,6 +268,27 @@
     color: var(--primary); font-weight: 600; font-size: 13px; padding: 9px 14px; border-radius: var(--radius); cursor: pointer; margin-top: 4px; }
   .add-cond:hover { background: var(--muted); }
 
+  /* Document info fields editor */
+  .info-field-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 10px; margin-bottom: 10px; }
+  .info-field-row .if-label { flex: 1 1 150px; }
+  .info-field-row .if-regex { flex: 1 1 200px; font-family: 'Courier New', monospace; font-size: 12.5px; }
+  .if-hint { font-size: 11.5px; color: var(--cadet-05); margin: -4px 0 12px; }
+  .req-flag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: 4px;
+    padding: 2px 7px; white-space: nowrap; }
+  .req-flag.required { background: var(--destructive-bg); color: var(--destructive); }
+  .req-flag.optional { background: var(--pill-bg); color: var(--pill-text); }
+  /* Required flag — on/off switch */
+  .if-required-switch { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; white-space: nowrap; }
+  .if-required-switch .if-req-label { font-size: 12.5px; font-weight: 600; color: var(--cadet-base); }
+  .req-switch { position: relative; width: 34px; height: 18px; border-radius: 999px; background: var(--border);
+    border: none; padding: 0; cursor: pointer; flex-shrink: 0; transition: background .15s ease; }
+  .req-switch:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+  .req-switch.on { background: var(--primary); }
+  .req-switch-knob { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.25); transition: left .15s ease; }
+  .req-switch.on .req-switch-knob { left: 18px; }
+
   .format-opts { display: flex; flex-wrap: wrap; gap: 10px; }
   .format-opts label { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); border-radius: var(--radius);
     padding: 9px 14px; font-size: 13px; font-weight: 600; color: var(--cadet-base); cursor: pointer; user-select: none; }
@@ -291,6 +353,16 @@
   .view-sub { color: var(--cadet-05); font-size: 13px; direction: rtl; margin-top: 4px; }
   .view-desc { font-size: 13.5px; color: var(--cadet-base); line-height: 1.5; margin: 14px 0 4px; }
   .view-check-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--cadet-05); margin: 18px 0 10px; }
+  .view-check-sub { font-size: 12px; color: var(--cadet-05); margin: -6px 0 12px; line-height: 1.4; }
+  .view-info-fields { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .view-info-fields li { display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    border: 1px solid var(--border-subtle); border-radius: var(--radius); padding: 8px 12px; }
+  .view-info-fields .vif-name { font-size: 13.5px; font-weight: 600; color: var(--foreground); }
+  .view-info-fields .vif-tags { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .vif-type { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--pill-text);
+    background: var(--pill-bg); border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
+  .vif-regex { font-family: 'Courier New', monospace; font-size: 11.5px; color: var(--primary); background: var(--ocean-10);
+    border: 1px solid #DCE3F5; border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
 
   /* Toast */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
@@ -356,6 +428,7 @@
     <a class="nav-link active" href="document-types.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/></svg>Document Types<span class="new-badge">NEW</span></a>
     <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z"/></svg>PCC Templates</a>
     <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25"/></svg>Terminals</a>
+    <a class="nav-link" href="document-rules.html"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0 1 18 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3 1.5 1.5 3-3.75"/></svg>Document Rules</a>
     <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-9L21 3m0 0-4.5-4.5M21 3v13.5" transform="translate(0 3)"/></svg>Reconciliation</a>
     <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 7.5 3m0 0L12 7.5M7.5 3v13.5M21 16.5 16.5 21m0 0L12 16.5m4.5 4.5V7.5"/></svg>Orders</a>
     <a class="nav-link" href="#"><svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0 0 12 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75Z"/></svg>Transfers</a>
@@ -439,6 +512,37 @@
           </table>
         </div>
         <div class="no-results" id="noResults">No document types match your search.</div>
+
+        <div class="pagination-bar" id="paginationBar">
+          <div class="pagination-info" id="pageInfo">0 - 0 Of 0</div>
+          <div style="display:flex; align-items:center; gap:20px;">
+            <div class="pagination" id="pagination"></div>
+            <div class="rpp">
+              Rows per page:
+              <select id="rpp">
+                <option>5</option>
+                <option selected>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════ Events ══════════ -->
+      <div class="card">
+        <div class="card-head">
+          <svg class="hi ch-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z"/></svg>
+          <div>
+            <h2>Events</h2>
+            <p class="ch-sub">Full audit trail of this module — every document type that is created, updated, or deleted is recorded here with who did it and when.</p>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="eventsList"></div>
+          <div class="events-empty" id="eventsEmpty">No events recorded yet — actions on document types will appear here.</div>
+        </div>
       </div>
     </div>
   </main>
@@ -475,6 +579,12 @@
           <label class="lbl">Required Conditions</label>
           <div id="condEditor"></div>
           <button class="add-cond" id="addCond"><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add condition</button>
+        </div>
+        <div class="field">
+          <label class="lbl">Document info fields</label>
+          <div class="if-hint">The data fields an agent fills in for this document type — shown as a card in Merchant → Document Info. Add a validation regex to control the accepted format of each field (leave blank to accept any value).</div>
+          <div id="infoFieldEditor"></div>
+          <button class="add-cond" id="addInfoField" type="button"><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add field</button>
         </div>
         <div class="field-2 field">
           <div>
@@ -562,9 +672,13 @@
         <div class="view-files" id="viewFiles"></div>
         <div class="view-check-title" id="viewCheckTitle">What to check</div>
         <ul class="conditions" id="viewConds" style="max-width:none"></ul>
+        <div class="view-check-title" id="viewInfoFieldsTitle">Document info fields</div>
+        <div class="view-check-sub" id="viewInfoFieldsSub"></div>
+        <ul class="view-info-fields" id="viewInfoFields"></ul>
       </div>
     </div>
   </div>
+
 
   <div class="toast" id="toast"></div>
 
@@ -578,39 +692,76 @@
         { en: 'Both front and back sides are clearly visible', ar: 'الوجهان الأمامي والخلفي واضحان تمامًا' },
         { en: 'Document is valid and not expired', ar: 'المستند ساري وغير منتهي الصلاحية' },
         { en: 'All corners and text are readable', ar: 'جميع الأركان والنصوص واضحة للقراءة' } ],
-      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'labeled', labels: [{ name: 'Front side', img: null }, { name: 'Back side', img: null }] } },
+      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'labeled', labels: [{ name: 'Front side', img: null }, { name: 'Back side', img: null }] },
+      infoFields: [
+        { label: 'National ID Number', pattern: '^[0-9]{14}$' },
+        { label: 'Full Name (as printed)', pattern: '' },
+        { label: 'Date of Birth', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Gender', pattern: '^(Male|Female)$' },
+        { label: 'Nationality', pattern: '^(Egyptian|Foreign)$' },
+        { label: 'Address on ID', pattern: '' },
+        { label: 'ID Expiry Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+      ] },
     { id: 2, name: 'Commercial Registration', nameAr: 'السجل التجاري', kind: 'certificate', img: null,
       desc: 'Official commercial registration certificate.', descAr: 'شهادة السجل التجاري الرسمية.',
       conditions: [
         { en: 'Issued within the last 6 months', ar: 'صادر خلال آخر 6 أشهر' },
         { en: 'Company name matches the merchant account', ar: 'اسم الشركة مطابق لحساب التاجر' },
         { en: 'Official stamp is visible', ar: 'الختم الرسمي ظاهر' } ],
-      formats: ['PDF'], maxSize: 10, files: { mode: 'single', labels: [] } },
+      formats: ['PDF'], maxSize: 10, files: { mode: 'single', labels: [] },
+      infoFields: [
+        { label: 'CR Number', pattern: '^[0-9]{4,10}$' },
+        { label: 'Registered Company Name', pattern: '' },
+        { label: 'Legal Form', pattern: '^(Sole proprietorship|LLC|JSC|Partnership|Branch of foreign company)$' },
+        { label: 'Registration Office', pattern: '' },
+        { label: 'CR Expiry / Renewal Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Authorised Manager Name', pattern: '' }
+      ] },
     { id: 3, name: 'Tax Card', nameAr: 'البطاقة الضريبية', kind: 'tax-card', img: null,
       desc: 'Valid tax registration card issued by the authority.', descAr: 'بطاقة ضريبية سارية صادرة من المصلحة.',
       conditions: [
         { en: 'Tax number is clearly readable', ar: 'الرقم الضريبي واضح للقراءة' },
         { en: 'Card is currently valid', ar: 'البطاقة سارية حاليًا' } ],
-      formats: ['PDF','JPG'], maxSize: 5, files: { mode: 'single', labels: [] } },
+      formats: ['PDF','JPG'], maxSize: 5, files: { mode: 'single', labels: [] },
+      infoFields: [
+        { label: 'Tax Registration Number', pattern: '^[0-9]{9}$' },
+        { label: 'Registered Name', pattern: '' },
+        { label: 'Tax Office', pattern: '' },
+        { label: 'Taxable Activity', pattern: '' }
+      ] },
     { id: 4, name: 'Bank Statement', nameAr: 'كشف حساب بنكي', kind: 'bank-statement', img: null,
       desc: 'Recent statement confirming the settlement account.', descAr: 'كشف حساب حديث يؤكد حساب التسوية.',
       conditions: [
         { en: 'Dated within the last 3 months', ar: 'بتاريخ خلال آخر 3 أشهر' },
         { en: 'Account holder name matches the merchant', ar: 'اسم صاحب الحساب مطابق للتاجر' },
         { en: 'IBAN is visible', ar: 'رقم الآيبان ظاهر' } ],
-      formats: ['PDF'], maxSize: 10, files: { mode: 'unlabeled', labels: [] } },
+      formats: ['PDF'], maxSize: 10, files: { mode: 'unlabeled', labels: [] },
+      infoFields: [
+        { label: 'Account Holder Name', pattern: '' },
+        { label: 'IBAN', pattern: '^EG\\d{27}$' },
+        { label: 'Bank Name', pattern: '' }
+      ] },
     { id: 5, name: 'Signed Contract', nameAr: 'العقد الموقع', kind: 'contract', img: null,
       desc: 'Merchant service agreement, signed and stamped.', descAr: 'اتفاقية خدمة التاجر موقعة ومختومة.',
       conditions: [
         { en: 'Signed on every required page', ar: 'موقّع على كل صفحة مطلوبة' },
         { en: 'Company stamp is applied', ar: 'ختم الشركة مطبوع' } ],
-      formats: ['PDF'], maxSize: 15, files: { mode: 'unlabeled', labels: [] } },
+      formats: ['PDF'], maxSize: 15, files: { mode: 'unlabeled', labels: [] },
+      infoFields: [
+        { label: 'Authorized Signatory', pattern: '' },
+        { label: 'Signature Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
+        { label: 'Contract Reference', pattern: '' }
+      ] },
     { id: 6, name: 'Proof of Address', nameAr: 'إثبات العنوان', kind: 'proof-address', img: null,
       desc: 'Utility bill or lease dated within the last 3 months.', descAr: 'فاتورة مرافق أو عقد إيجار بتاريخ خلال آخر 3 أشهر.',
       conditions: [
         { en: 'Address matches the registered address', ar: 'العنوان مطابق للعنوان المسجل' },
         { en: 'Dated within the last 3 months', ar: 'بتاريخ خلال آخر 3 أشهر' } ],
-      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'single', labels: [] } }
+      formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'single', labels: [] },
+      infoFields: [
+        { label: 'Address on Document', pattern: '' },
+        { label: 'Document Issue Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+      ] }
   ];
 
   /* ---- Schematic example illustrations (safe, generic guidance visuals) ---- */
@@ -712,6 +863,23 @@
   const $ = id => document.getElementById(id);
   const esc = s => (s || '').replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
 
+  /* Paging state for the document types list */
+  const pageState = { page: 1, perPage: 10 };
+
+  /* Publishes the document-info field definitions so other prototype pages (e.g.
+     merchant-legal-data.html) can read them via localStorage and render a matching
+     card for each document type — no code change needed there when fields change here. */
+  const REGISTRY_KEY = 'kashier.documentTypes.registry';
+  function syncRegistry() {
+    try {
+      const registry = documentTypes.map(d => ({
+        id: d.id, name: d.name, nameAr: d.nameAr, kind: d.kind, desc: d.desc,
+        infoFields: d.infoFields || []
+      }));
+      localStorage.setItem(REGISTRY_KEY, JSON.stringify(registry));
+    } catch (e) { /* localStorage unavailable — registry simply won't sync */ }
+  }
+
   function render() {
     const q = $('searchInput').value.trim().toLowerCase();
     const body = $('tableBody');
@@ -723,7 +891,12 @@
       return hay.includes(q);
     });
 
-    body.innerHTML = matches.map(d => `
+    const totalPages = Math.max(1, Math.ceil(matches.length / pageState.perPage));
+    if (pageState.page > totalPages) pageState.page = totalPages;
+    const start = (pageState.page - 1) * pageState.perPage;
+    const pageRows = matches.slice(start, start + pageState.perPage);
+
+    body.innerHTML = pageRows.map(d => `
       <tr>
         <td data-label="Document">
           <div class="name-cell">
@@ -761,6 +934,69 @@
     } else {
       $('count').textContent = `${total} document type${total === 1 ? '' : 's'}`;
     }
+
+    $('paginationBar').style.display = matches.length ? 'flex' : 'none';
+    $('pageInfo').textContent =
+      `${matches.length === 0 ? 0 : start + 1} - ${Math.min(start + pageState.perPage, matches.length)} Of ${matches.length}`;
+    renderPagination(totalPages);
+    syncRegistry();
+  }
+
+  function renderPagination(totalPages) {
+    const btn = (label, page, opts = {}) =>
+      `<button class="page-btn ${opts.active ? 'active' : ''}" ${opts.disabled ? 'disabled' : ''} data-page="${page}">${label}</button>`;
+    const chevL = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5"/></svg>';
+    const chevR = '<svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5"/></svg>';
+
+    let html = btn(chevL, pageState.page - 1, { disabled: pageState.page <= 1 });
+    for (let p = 1; p <= totalPages; p++) html += btn(p, p, { active: p === pageState.page });
+    html += btn(chevR, pageState.page + 1, { disabled: pageState.page >= totalPages });
+    $('pagination').innerHTML = html;
+
+    $('pagination').querySelectorAll('[data-page]').forEach(b => b.addEventListener('click', () => {
+      const p = Number(b.dataset.page);
+      if (p >= 1 && p <= totalPages) { pageState.page = p; render(); }
+    }));
+  }
+
+  /* ---- Events (audit trail) ---- */
+  const CURRENT_USER = 'Aya Muhammed';
+  const events = [];  // newest first
+
+  const PENCIL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"/></svg>';
+
+  /** "07/22/2026. 03:08:56 PM" — the portal's event timestamp format. */
+  function formatEventTime(d) {
+    const p = n => String(n).padStart(2, '0');
+    let h = d.getHours();
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    return p(d.getMonth() + 1) + '/' + p(d.getDate()) + '/' + d.getFullYear() + '. ' +
+      p(h) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds()) + ' ' + ampm;
+  }
+
+  const EVENT_PHRASE = {
+    created: 'created document type',
+    updated: 'updated document type',
+    deleted: 'deleted document type',
+    exported: 'exported',
+  };
+
+  function logEvent(action, target) {
+    events.unshift({ ts: new Date(), action, target, actor: CURRENT_USER });
+    renderEvents();
+  }
+
+  function renderEvents() {
+    $('eventsEmpty').classList.toggle('show', events.length === 0);
+    $('eventsList').innerHTML = events.map(ev => `
+      <div class="event-item">
+        <div class="ev-icon ${ev.action}">${PENCIL_ICON}</div>
+        <div class="ev-body">
+          <div class="ev-ts">${formatEventTime(ev.ts)}</div>
+          <div class="ev-sentence"><b>${esc(ev.actor)}</b> ${EVENT_PHRASE[ev.action]} <b>${esc(ev.target)}</b></div>
+        </div>
+      </div>`).join('');
   }
 
   /* ---- Toast ---- */
@@ -773,8 +1009,9 @@
     toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
   }
 
-  /* ---- Search ---- */
-  $('searchInput').addEventListener('input', render);
+  /* ---- Search & rows per page ---- */
+  $('searchInput').addEventListener('input', () => { pageState.page = 1; render(); });
+  $('rpp').addEventListener('change', e => { pageState.perPage = Number(e.target.value); pageState.page = 1; render(); });
 
   /* ---- Sidebar (mobile) ---- */
   function openSidebar() { $('sidebar').classList.add('open'); $('overlay').classList.add('open'); }
@@ -817,6 +1054,19 @@
     return wrap;
   }
   $('addCond').addEventListener('click', () => $('condEditor').appendChild(condRow()));
+
+  /* ---- Document info fields editor (data fields recorded per document, reflected in Merchant → Document Info) ---- */
+  function infoFieldRow(label = '', pattern = '') {
+    const wrap = document.createElement('div');
+    wrap.className = 'info-field-row';
+    wrap.innerHTML = `
+      <input class="inp if-label" placeholder="Field label, e.g. IBAN" value="${esc(label)}">
+      <input class="inp if-regex" placeholder="Validation regex (optional), e.g. ^[0-9]{14}$" value="${esc(pattern)}" spellcheck="false" autocapitalize="off" autocomplete="off">
+      <button type="button" class="cond-remove" title="Remove field">&times;</button>`;
+    wrap.querySelector('.cond-remove').addEventListener('click', () => wrap.remove());
+    return wrap;
+  }
+  $('addInfoField').addEventListener('click', () => $('infoFieldEditor').appendChild(infoFieldRow()));
 
   /* ---- File-label editor (each label carries its own example image) ---- */
   const IMG_PH = '<svg class="ph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"/></svg>';
@@ -922,6 +1172,11 @@
     ed.innerHTML = '';
     const conds = doc && doc.conditions.length ? doc.conditions : [{ en:'', ar:'' }];
     conds.forEach(c => ed.appendChild(condRow(c.en, c.ar)));
+    // document info fields
+    const ifed = $('infoFieldEditor');
+    ifed.innerHTML = '';
+    const iflds = doc && doc.infoFields && doc.infoFields.length ? doc.infoFields : [];
+    iflds.forEach(f => ifed.appendChild(infoFieldRow(f.label, f.pattern || '')));
     // file rule
     const mode = doc && doc.files ? doc.files.mode : 'single';
     $('ruleOpts').querySelectorAll('input[name="frule"]').forEach(r => {
@@ -959,6 +1214,10 @@
       en: r.querySelector('.cond-en-input').value.trim(),
       ar: r.querySelector('.cond-ar-input').value.trim()
     })).filter(c => c.en || c.ar);
+    const infoFields = Array.from($('infoFieldEditor').querySelectorAll('.info-field-row')).map(r => ({
+      label: r.querySelector('.if-label').value.trim(),
+      pattern: r.querySelector('.if-regex').value.trim()
+    })).filter(f => f.label);
     const formats = Array.from($('formatOpts').querySelectorAll('input:checked')).map(c => c.value);
     const maxSize = parseInt($('fMaxSize').value, 10) || 5;
     const mode = ($('ruleOpts').querySelector('input[name="frule"]:checked') || {}).value || 'single';
@@ -990,15 +1249,17 @@
       name, nameAr: $('fNameAr').value.trim(),
       desc: $('fDesc').value.trim(), descAr: $('fDescAr').value.trim(),
       conditions, formats: formats.length ? formats : ['PDF'], maxSize,
-      files: { mode, labels }, img: mode === 'labeled' ? null : formImg
+      files: { mode, labels }, img: mode === 'labeled' ? null : formImg, infoFields
     };
     if (editingId) {
       const d = documentTypes.find(x => x.id === editingId);
       Object.assign(d, payload);
       toast('Document type updated');
+      logEvent('updated', name);
     } else {
       documentTypes.push({ id: nextId++, kind: 'generic', ...payload });
       toast('Document type added');
+      logEvent('created', name);
     }
     closeForm();
     render();
@@ -1037,6 +1298,17 @@
     $('viewConds').innerHTML = hasConds
       ? d.conditions.map(c => `<li>${CHECK}<div class="cond-text"><span>${esc(c.en)}</span>${c.ar ? `<span class="cond-ar">${esc(c.ar)}</span>` : ''}</div></li>`).join('')
       : '';
+    // document info fields — read-only, this is the source of truth reflected in Merchant → Document Info
+    const iflds = d.infoFields || [];
+    $('viewInfoFieldsTitle').style.display = iflds.length ? '' : 'none';
+    $('viewInfoFieldsSub').style.display = iflds.length ? '' : 'none';
+    $('viewInfoFieldsSub').textContent = iflds.length
+      ? `Recorded per merchant in Document Info — edit this document type to change.`
+      : '';
+    $('viewInfoFields').innerHTML = iflds.map(f => `
+      <li><span class="vif-name">${esc(f.label)}</span>
+        <span class="vif-tags">${f.pattern ? `<code class="vif-regex" title="Validation regex">${esc(f.pattern)}</code>` : `<span class="vif-type">Any value</span>`}</span>
+      </li>`).join('');
     $('viewBackdrop').classList.add('open');
   }
   function closeView() { $('viewBackdrop').classList.remove('open'); }
@@ -1055,10 +1327,12 @@
   $('delCancel').addEventListener('click', closeDelete);
   $('delBackdrop').addEventListener('click', e => { if (e.target === $('delBackdrop')) closeDelete(); });
   $('delConfirm').addEventListener('click', () => {
+    const removed = documentTypes.find(d => d.id === deletingId);
     documentTypes = documentTypes.filter(d => d.id !== deletingId);
     closeDelete();
     render();
     toast('Document type deleted');
+    if (removed) logEvent('deleted', removed.name);
   });
 
   /* ---- Export CSV ---- */
@@ -1081,6 +1355,7 @@
     document.body.appendChild(a); a.click(); a.remove();
     URL.revokeObjectURL(url);
     toast('Exported ' + documentTypes.length + ' document types');
+    logEvent('exported', documentTypes.length + ' document types to CSV');
   });
 
   /* ---- Esc closes modals / sidebar ---- */
@@ -1089,6 +1364,7 @@
   });
 
   render();
+  renderEvents();
 </script>
 
 </body>
