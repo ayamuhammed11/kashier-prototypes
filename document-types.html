@@ -272,7 +272,15 @@
   .info-field-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border: 1px solid var(--border);
     border-radius: var(--radius); padding: 10px; margin-bottom: 10px; }
   .info-field-row .if-label { flex: 1 1 150px; }
-  .info-field-row .if-regex { flex: 1 1 200px; font-family: 'Courier New', monospace; font-size: 12.5px; }
+  .info-field-row .if-type { flex: 0 0 120px; width: 120px; cursor: pointer; }
+  .if-validation { flex: 1 1 100%; margin-top: 4px; border-top: 1px dashed var(--border-subtle); padding-top: 9px; }
+  .if-vlabel { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--cadet-05); margin-bottom: 7px; }
+  .if-rule { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .if-rk { font-size: 12px; font-weight: 600; color: var(--cadet-base); }
+  .if-rule .if-pattern { flex: 1 1 220px; font-family: 'Courier New', monospace; font-size: 12.5px; }
+  .if-rule .if-options { flex: 1 1 240px; }
+  .if-rule .if-min, .if-rule .if-max { width: 104px; }
+  .if-rule .if-mindate, .if-rule .if-maxdate { width: 152px; }
   .if-hint { font-size: 11.5px; color: var(--cadet-05); margin: -4px 0 12px; }
   .req-flag { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; border-radius: 4px;
     padding: 2px 7px; white-space: nowrap; }
@@ -363,6 +371,7 @@
     background: var(--pill-bg); border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
   .vif-regex { font-family: 'Courier New', monospace; font-size: 11.5px; color: var(--primary); background: var(--ocean-10);
     border: 1px solid #DCE3F5; border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
+  .vif-rule { font-size: 11.5px; color: var(--cadet-base); background: var(--pill-bg); border-radius: 4px; padding: 2px 7px; white-space: nowrap; }
 
   /* Toast */
   .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--primary);
@@ -582,7 +591,7 @@
         </div>
         <div class="field">
           <label class="lbl">Document info fields</label>
-          <div class="if-hint">The data fields an agent fills in for this document type — shown as a card in Merchant → Document Info. Add a validation regex to control the accepted format of each field (leave blank to accept any value).</div>
+          <div class="if-hint">The data fields an agent fills in for this document type — shown as a card in Merchant → Document Info. Choose each field's type and add optional validation rules (regex for text, min/max for number, date range, or dropdown options).</div>
           <div id="infoFieldEditor"></div>
           <button class="add-cond" id="addInfoField" type="button"><svg class="hi-xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/></svg>Add field</button>
         </div>
@@ -694,13 +703,13 @@
         { en: 'All corners and text are readable', ar: 'جميع الأركان والنصوص واضحة للقراءة' } ],
       formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'labeled', labels: [{ name: 'Front side', img: null }, { name: 'Back side', img: null }] },
       infoFields: [
-        { label: 'National ID Number', pattern: '^[0-9]{14}$' },
-        { label: 'Full Name (as printed)', pattern: '' },
-        { label: 'Date of Birth', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
-        { label: 'Gender', pattern: '^(Male|Female)$' },
-        { label: 'Nationality', pattern: '^(Egyptian|Foreign)$' },
-        { label: 'Address on ID', pattern: '' },
-        { label: 'ID Expiry Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+        { label: 'National ID Number', type: 'text', pattern: '^[0-9]{14}$' },
+        { label: 'Full Name (as printed)', type: 'text' },
+        { label: 'Date of Birth', type: 'date' },
+        { label: 'Gender', type: 'dropdown', options: ['Male','Female'] },
+        { label: 'Nationality', type: 'dropdown', options: ['Egyptian','Foreign'] },
+        { label: 'Address on ID', type: 'text' },
+        { label: 'ID Expiry Date', type: 'date' }
       ] },
     { id: 2, name: 'Commercial Registration', nameAr: 'السجل التجاري', kind: 'certificate', img: null,
       desc: 'Official commercial registration certificate.', descAr: 'شهادة السجل التجاري الرسمية.',
@@ -710,12 +719,12 @@
         { en: 'Official stamp is visible', ar: 'الختم الرسمي ظاهر' } ],
       formats: ['PDF'], maxSize: 10, files: { mode: 'single', labels: [] },
       infoFields: [
-        { label: 'CR Number', pattern: '^[0-9]{4,10}$' },
-        { label: 'Registered Company Name', pattern: '' },
-        { label: 'Legal Form', pattern: '^(Sole proprietorship|LLC|JSC|Partnership|Branch of foreign company)$' },
-        { label: 'Registration Office', pattern: '' },
-        { label: 'CR Expiry / Renewal Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
-        { label: 'Authorised Manager Name', pattern: '' }
+        { label: 'CR Number', type: 'text', pattern: '^[0-9]{4,10}$' },
+        { label: 'Registered Company Name', type: 'text' },
+        { label: 'Legal Form', type: 'dropdown', options: ['Sole proprietorship','LLC','JSC','Partnership','Branch of foreign company'] },
+        { label: 'Registration Office', type: 'text' },
+        { label: 'CR Expiry / Renewal Date', type: 'date' },
+        { label: 'Authorised Manager Name', type: 'text' }
       ] },
     { id: 3, name: 'Tax Card', nameAr: 'البطاقة الضريبية', kind: 'tax-card', img: null,
       desc: 'Valid tax registration card issued by the authority.', descAr: 'بطاقة ضريبية سارية صادرة من المصلحة.',
@@ -724,10 +733,10 @@
         { en: 'Card is currently valid', ar: 'البطاقة سارية حاليًا' } ],
       formats: ['PDF','JPG'], maxSize: 5, files: { mode: 'single', labels: [] },
       infoFields: [
-        { label: 'Tax Registration Number', pattern: '^[0-9]{9}$' },
-        { label: 'Registered Name', pattern: '' },
-        { label: 'Tax Office', pattern: '' },
-        { label: 'Taxable Activity', pattern: '' }
+        { label: 'Tax Registration Number', type: 'text', pattern: '^[0-9]{9}$' },
+        { label: 'Registered Name', type: 'text' },
+        { label: 'Tax Office', type: 'text' },
+        { label: 'Taxable Activity', type: 'text' }
       ] },
     { id: 4, name: 'Bank Statement', nameAr: 'كشف حساب بنكي', kind: 'bank-statement', img: null,
       desc: 'Recent statement confirming the settlement account.', descAr: 'كشف حساب حديث يؤكد حساب التسوية.',
@@ -737,9 +746,9 @@
         { en: 'IBAN is visible', ar: 'رقم الآيبان ظاهر' } ],
       formats: ['PDF'], maxSize: 10, files: { mode: 'unlabeled', labels: [] },
       infoFields: [
-        { label: 'Account Holder Name', pattern: '' },
-        { label: 'IBAN', pattern: '^EG\\d{27}$' },
-        { label: 'Bank Name', pattern: '' }
+        { label: 'Account Holder Name', type: 'text' },
+        { label: 'IBAN', type: 'text', pattern: '^EG\\d{27}$' },
+        { label: 'Bank Name', type: 'text' }
       ] },
     { id: 5, name: 'Signed Contract', nameAr: 'العقد الموقع', kind: 'contract', img: null,
       desc: 'Merchant service agreement, signed and stamped.', descAr: 'اتفاقية خدمة التاجر موقعة ومختومة.',
@@ -748,9 +757,9 @@
         { en: 'Company stamp is applied', ar: 'ختم الشركة مطبوع' } ],
       formats: ['PDF'], maxSize: 15, files: { mode: 'unlabeled', labels: [] },
       infoFields: [
-        { label: 'Authorized Signatory', pattern: '' },
-        { label: 'Signature Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' },
-        { label: 'Contract Reference', pattern: '' }
+        { label: 'Authorized Signatory', type: 'text' },
+        { label: 'Signature Date', type: 'date' },
+        { label: 'Contract Reference', type: 'text' }
       ] },
     { id: 6, name: 'Proof of Address', nameAr: 'إثبات العنوان', kind: 'proof-address', img: null,
       desc: 'Utility bill or lease dated within the last 3 months.', descAr: 'فاتورة مرافق أو عقد إيجار بتاريخ خلال آخر 3 أشهر.',
@@ -759,8 +768,8 @@
         { en: 'Dated within the last 3 months', ar: 'بتاريخ خلال آخر 3 أشهر' } ],
       formats: ['PDF','JPG','PNG'], maxSize: 5, files: { mode: 'single', labels: [] },
       infoFields: [
-        { label: 'Address on Document', pattern: '' },
-        { label: 'Document Issue Date', pattern: '^\\d{4}-\\d{2}-\\d{2}$' }
+        { label: 'Address on Document', type: 'text' },
+        { label: 'Document Issue Date', type: 'date' }
       ] }
   ];
 
@@ -1056,13 +1065,35 @@
   $('addCond').addEventListener('click', () => $('condEditor').appendChild(condRow()));
 
   /* ---- Document info fields editor (data fields recorded per document, reflected in Merchant → Document Info) ---- */
-  function infoFieldRow(label = '', pattern = '') {
+  function infoFieldRow(f = {}) {
+    const type = f.type || 'text';
     const wrap = document.createElement('div');
     wrap.className = 'info-field-row';
     wrap.innerHTML = `
-      <input class="inp if-label" placeholder="Field label, e.g. IBAN" value="${esc(label)}">
-      <input class="inp if-regex" placeholder="Validation regex (optional), e.g. ^[0-9]{14}$" value="${esc(pattern)}" spellcheck="false" autocapitalize="off" autocomplete="off">
-      <button type="button" class="cond-remove" title="Remove field">&times;</button>`;
+      <input class="inp if-label" placeholder="Field label, e.g. IBAN" value="${esc(f.label || '')}">
+      <select class="inp if-type" title="Field type">
+        <option value="text">Text</option>
+        <option value="number">Number</option>
+        <option value="date">Date</option>
+        <option value="dropdown">Dropdown</option>
+      </select>
+      <button type="button" class="cond-remove" title="Remove field">&times;</button>
+      <div class="if-validation">
+        <div class="if-vlabel">Validation rules <span style="font-weight:400;text-transform:none;letter-spacing:0;">(optional)</span></div>
+        <div class="if-rule if-rule-text"><input class="inp if-pattern" placeholder="Regex pattern, e.g. ^[0-9]{14}$" value="${esc(f.pattern || '')}" spellcheck="false" autocomplete="off"></div>
+        <div class="if-rule if-rule-number"><span class="if-rk">Min</span><input class="inp if-min" type="number" placeholder="none" value="${f.min != null ? esc(String(f.min)) : ''}"><span class="if-rk">Max</span><input class="inp if-max" type="number" placeholder="none" value="${f.max != null ? esc(String(f.max)) : ''}"></div>
+        <div class="if-rule if-rule-date"><span class="if-rk">Earliest</span><input class="inp if-mindate" type="date" value="${esc(f.minDate || '')}"><span class="if-rk">Latest</span><input class="inp if-maxdate" type="date" value="${esc(f.maxDate || '')}"></div>
+        <div class="if-rule if-rule-dropdown"><input class="inp if-options" placeholder="Options, comma separated — e.g. Male, Female" value="${esc((f.options || []).join(', '))}"></div>
+      </div>`;
+    const sel = wrap.querySelector('.if-type');
+    sel.value = type;
+    const applyRule = () => {
+      wrap.querySelectorAll('.if-rule').forEach(r => r.style.display = 'none');
+      const active = wrap.querySelector('.if-rule-' + sel.value);
+      if (active) active.style.display = '';
+    };
+    applyRule();
+    sel.addEventListener('change', applyRule);
     wrap.querySelector('.cond-remove').addEventListener('click', () => wrap.remove());
     return wrap;
   }
@@ -1176,7 +1207,7 @@
     const ifed = $('infoFieldEditor');
     ifed.innerHTML = '';
     const iflds = doc && doc.infoFields && doc.infoFields.length ? doc.infoFields : [];
-    iflds.forEach(f => ifed.appendChild(infoFieldRow(f.label, f.pattern || '')));
+    iflds.forEach(f => ifed.appendChild(infoFieldRow(f)));
     // file rule
     const mode = doc && doc.files ? doc.files.mode : 'single';
     $('ruleOpts').querySelectorAll('input[name="frule"]').forEach(r => {
@@ -1214,10 +1245,24 @@
       en: r.querySelector('.cond-en-input').value.trim(),
       ar: r.querySelector('.cond-ar-input').value.trim()
     })).filter(c => c.en || c.ar);
-    const infoFields = Array.from($('infoFieldEditor').querySelectorAll('.info-field-row')).map(r => ({
-      label: r.querySelector('.if-label').value.trim(),
-      pattern: r.querySelector('.if-regex').value.trim()
-    })).filter(f => f.label);
+    const infoFields = Array.from($('infoFieldEditor').querySelectorAll('.info-field-row')).map(r => {
+      const type = r.querySelector('.if-type').value;
+      const fld = { label: r.querySelector('.if-label').value.trim(), type };
+      if (type === 'text') {
+        const p = r.querySelector('.if-pattern').value.trim(); if (p) fld.pattern = p;
+      } else if (type === 'number') {
+        const mn = r.querySelector('.if-min').value.trim(), mx = r.querySelector('.if-max').value.trim();
+        if (mn !== '') fld.min = Number(mn);
+        if (mx !== '') fld.max = Number(mx);
+      } else if (type === 'date') {
+        const mn = r.querySelector('.if-mindate').value, mx = r.querySelector('.if-maxdate').value;
+        if (mn) fld.minDate = mn;
+        if (mx) fld.maxDate = mx;
+      } else if (type === 'dropdown') {
+        fld.options = r.querySelector('.if-options').value.split(',').map(o => o.trim()).filter(Boolean);
+      }
+      return fld;
+    }).filter(f => f.label);
     const formats = Array.from($('formatOpts').querySelectorAll('input:checked')).map(c => c.value);
     const maxSize = parseInt($('fMaxSize').value, 10) || 5;
     const mode = ($('ruleOpts').querySelector('input[name="frule"]:checked') || {}).value || 'single';
@@ -1305,10 +1350,16 @@
     $('viewInfoFieldsSub').textContent = iflds.length
       ? `Recorded per merchant in Document Info — edit this document type to change.`
       : '';
-    $('viewInfoFields').innerHTML = iflds.map(f => `
-      <li><span class="vif-name">${esc(f.label)}</span>
-        <span class="vif-tags">${f.pattern ? `<code class="vif-regex" title="Validation regex">${esc(f.pattern)}</code>` : `<span class="vif-type">Any value</span>`}</span>
-      </li>`).join('');
+    $('viewInfoFields').innerHTML = iflds.map(f => {
+      const type = f.type || 'text';
+      let rule = '';
+      if (type === 'text' && f.pattern) rule = `<code class="vif-regex" title="Validation regex">${esc(f.pattern)}</code>`;
+      else if (type === 'number' && (f.min != null || f.max != null)) rule = `<span class="vif-rule">${f.min != null ? 'min ' + f.min : ''}${f.min != null && f.max != null ? ' · ' : ''}${f.max != null ? 'max ' + f.max : ''}</span>`;
+      else if (type === 'date' && (f.minDate || f.maxDate)) rule = `<span class="vif-rule">${esc(f.minDate || '…')} → ${esc(f.maxDate || '…')}</span>`;
+      else if (type === 'dropdown' && (f.options || []).length) rule = `<span class="vif-rule">${esc(f.options.join(', '))}</span>`;
+      return `<li><span class="vif-name">${esc(f.label)}</span>
+        <span class="vif-tags"><span class="vif-type">${esc(type)}</span>${rule}</span></li>`;
+    }).join('');
     $('viewBackdrop').classList.add('open');
   }
   function closeView() { $('viewBackdrop').classList.remove('open'); }
